@@ -9,6 +9,7 @@ versions and write the patched files back.
 from .density import WRAPPER_TYPES, is_reference, unwrap
 from .fields import octave_key, provider, resolve_key, set_range, worldgen_config
 from .registries import CARVER, FEATURE, RegistryLike, VersionedRegistry, resolve_registry
+from .targets import Target, Targets
 from .trees import find_nodes, replace_nodes
 from .versions import Version, VersionLike, parse_version
 
@@ -17,6 +18,8 @@ __all__ = [
     "FEATURE",
     "WRAPPER_TYPES",
     "RegistryLike",
+    "Target",
+    "Targets",
     "Version",
     "VersionLike",
     "VersionedRegistry",
