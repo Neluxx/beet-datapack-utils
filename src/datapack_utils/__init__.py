@@ -6,4 +6,10 @@ helpers copy the matching vanilla files, hide format differences between
 versions and write the patched files back.
 """
 
-__all__: list[str] = []
+from .versions import Version, VersionLike, parse_version
+
+__all__ = [
+    "Version",
+    "VersionLike",
+    "parse_version",
+]
