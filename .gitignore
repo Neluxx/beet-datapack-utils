@@ -1,0 +1,25 @@
+# idea
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# vscode
+.settings/
+.vscode/
+bin/
+.classpath
+.project
+
+# macos
+*.DS_Store
+
+# python
+.venv
+__pycache__/
+
+# beet
+build/
+.pytest_cache/
+.ruff_cache/
+dist/
