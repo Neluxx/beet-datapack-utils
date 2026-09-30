@@ -8,6 +8,7 @@ versions and write the patched files back.
 
 from .fields import octave_key, provider, resolve_key, set_range, worldgen_config
 from .registries import CARVER, FEATURE, RegistryLike, VersionedRegistry, resolve_registry
+from .trees import find_nodes, replace_nodes
 from .versions import Version, VersionLike, parse_version
 
 __all__ = [
@@ -17,9 +18,11 @@ __all__ = [
     "Version",
     "VersionLike",
     "VersionedRegistry",
+    "find_nodes",
     "octave_key",
     "parse_version",
     "provider",
+    "replace_nodes",
     "resolve_key",
     "resolve_registry",
     "set_range",
