@@ -6,8 +6,6 @@ It is built for datapacks that support several Minecraft versions with one build
 
 A build has a base pack and overlays, each targeting a Minecraft version. For every one of them, the helpers copy the matching vanilla file, hide the format differences between versions and write the patched file back. The plugins only describe *what* to change.
 
-Used by [Medium Biomes](https://github.com/Neluxx/medium-biomes), [No More Ravines](https://github.com/Neluxx/no-more-ravines), [Cleaner Rivers](https://github.com/Neluxx/cleaner-rivers), [Vanilla Caves](https://github.com/Neluxx/vanilla-caves) and [Force Survival Mode](https://github.com/Neluxx/force-survival-mode).
-
 ## Installation
 
 Add the package to the `pyproject.toml` of your datapack. It is installed from GitHub, pinned to a release tag:
