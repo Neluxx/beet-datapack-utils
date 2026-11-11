@@ -1,4 +1,4 @@
-from datapack_utils import is_reference, unwrap
+from beet_datapack_utils import is_reference, unwrap
 
 
 def test_density_references():

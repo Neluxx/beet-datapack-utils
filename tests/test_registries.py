@@ -7,7 +7,7 @@ from beet.contrib.worldgen import (
     WorldgenNoise,
 )
 
-from datapack_utils import CARVER, FEATURE, VersionedRegistry, resolve_registry
+from beet_datapack_utils import CARVER, FEATURE, VersionedRegistry, resolve_registry
 
 
 @pytest.mark.parametrize(

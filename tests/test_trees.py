@@ -1,6 +1,6 @@
 import pytest
 
-from datapack_utils import find_nodes, replace_nodes
+from beet_datapack_utils import find_nodes, replace_nodes
 
 
 def test_find_nodes():

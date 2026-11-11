@@ -7,7 +7,7 @@ from beet.contrib.worldgen import (
     worldgen,
 )
 
-import datapack_utils.targets
+import beet_datapack_utils.targets
 
 CANYON_OLD = {"type": "minecraft:canyon", "config": {"probability": 0.01}}
 CANYON_NEW = {"type": "minecraft:canyon", "probability": 0.01}
@@ -57,7 +57,7 @@ class FakeVanilla:
 def fake_vanilla(monkeypatch):
     FakeVanilla.mounts = []
     FakeVanilla.instances = 0
-    monkeypatch.setattr(datapack_utils.targets, "Vanilla", FakeVanilla)
+    monkeypatch.setattr(beet_datapack_utils.targets, "Vanilla", FakeVanilla)
     return FakeVanilla
 
 

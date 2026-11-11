@@ -1,6 +1,6 @@
 import pytest
 
-from datapack_utils import Version, parse_version
+from beet_datapack_utils import Version, parse_version
 
 
 def test_parse_and_compare():

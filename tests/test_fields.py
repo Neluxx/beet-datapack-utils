@@ -1,6 +1,6 @@
 import pytest
 
-from datapack_utils import octave_key, provider, resolve_key, set_range, worldgen_config
+from beet_datapack_utils import octave_key, provider, resolve_key, set_range, worldgen_config
 
 
 def test_worldgen_config():
