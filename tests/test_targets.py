@@ -2,7 +2,7 @@ import pytest
 from beet import Context
 from beet.contrib.worldgen import WorldgenCarver, WorldgenConfiguredCarver
 
-from datapack_utils import CARVER, Target, Targets, Version, worldgen_config
+from beet_datapack_utils import CARVER, Target, Targets, Version, worldgen_config
 
 
 def disable_canyons(ctx: Context):
