@@ -8,20 +8,23 @@ A build has a base pack and overlays, each targeting a Minecraft version. For ev
 
 ## Installation
 
-Add the package to the `pyproject.toml` of your datapack. It is installed from GitHub, pinned to a release tag:
+Add the package to the dependencies of your datapack:
+
+```bash
+uv add beet-datapack-utils
+```
+
+Or add it to the `pyproject.toml` of your datapack yourself and run `uv lock`:
 
 ```toml
 [project]
 dependencies = [
     "beet>=0.119.0",
-    "beet-datapack-utils",
+    "beet-datapack-utils>=0.1.0",
 ]
-
-[tool.uv.sources]
-beet-datapack-utils = { git = "https://github.com/Neluxx/beet-datapack-utils", tag = "v1.0.0" }
 ```
 
-Then run `uv lock` and build with `uv run beet build`. Note that `uvx beet` runs beet in an isolated environment without your dependencies.
+Build with `uv run beet build`. Note that `uvx beet` runs beet in an isolated environment without your dependencies.
 
 ## Usage
 
@@ -157,4 +160,4 @@ with target.patch(WorldgenNoiseSettings, "minecraft:overworld") as settings:
 
 ## Contributing
 
-Contributions are welcome! Please read [CONTRIBUTING.md](docs/CONTRIBUTING.md) for commit conventions and guidelines.
+Contributions are welcome! Please read [CONTRIBUTING.md](https://github.com/Neluxx/beet-datapack-utils/blob/main/docs/CONTRIBUTING.md) for commit conventions and guidelines.

@@ -30,21 +30,21 @@ The tests replace beet's `Vanilla` service with a small in-memory fake (see `tes
 
 ## Trying changes in a datapack
 
-To test unreleased changes, point the datapack to your local checkout instead of the Git tag:
+To test unreleased changes, point the datapack to your local checkout instead of the PyPI release:
 
 ```toml
 [tool.uv.sources]
 beet-datapack-utils = { path = "../beet-datapack-utils", editable = true }
 ```
 
-Run `uv sync` in the datapack and build it with `uv run beet build`. Switch back to the tag before committing.
+Run `uv sync` in the datapack and build it with `uv run beet build`. Remove the `[tool.uv.sources]` entry again before committing.
 
 ## Project Structure
 
 ```
 .
 ├── docs/
-├── src/datapack_utils/
+├── src/beet_datapack_utils/
 │   ├── __init__.py        # Public API
 │   ├── targets.py         # Targets service and Target.patch
 │   ├── registries.py      # CARVER, FEATURE and VersionedRegistry
@@ -60,7 +60,8 @@ Run `uv sync` in the datapack and build it with `uv run beet build`. Switch back
 
 1. Update the version in `pyproject.toml` and move the `Unreleased` entries in `CHANGELOG.md` to a new version.
 2. Commit, then tag the commit, e.g. `git tag v1.1.0`, and push the tag.
-3. The release workflow checks that the tag matches the version, runs the tests and creates the GitHub release.
-4. In each datapack, update the `tag` in `[tool.uv.sources]` and run `uv lock`.
+3. The release workflow checks that the tag matches the version, runs the tests and publishes the package to [TestPyPI](https://test.pypi.org/project/beet-datapack-utils/).
+4. Check the TestPyPI release, then approve the `pypi` deployment in the workflow run. The same files are published to PyPI and attached to a new GitHub release.
+5. In each datapack, run `uv lock --upgrade-package beet-datapack-utils`.
 
 Follow [Semantic Versioning](https://semver.org/): renaming or removing a public function is a major version bump.
