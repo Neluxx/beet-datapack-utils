@@ -52,5 +52,6 @@ See the [changelog](../CHANGELOG.md) for what changed. Major versions may rename
 
 ## Next steps
 
+- [Usage](USAGE.md): configure `beet.yml` for your versions.
 - [API reference](API.md): all public classes and functions.
 - To try an unreleased version from a local checkout, see [Development](DEVELOPMENT.md#trying-changes-in-a-datapack).

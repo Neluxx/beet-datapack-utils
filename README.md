@@ -35,11 +35,14 @@ Requires Python 3.14+ and beet 0.119.0+.
 uv add beet-datapack-utils
 ```
 
+Then declare the versions of the base pack and the overlays in your `beet.yml`, as described in [Configuring `beet.yml`](https://github.com/Neluxx/beet-datapack-utils/blob/main/docs/USAGE.md#configuring-beetyml).
+
 ## Documentation
 
 | Topic | Description |
 | --- | --- |
 | [Installation](https://github.com/Neluxx/beet-datapack-utils/blob/main/docs/INSTALLATION.md) | Requirements and adding the package to your datapack |
+| [Usage](https://github.com/Neluxx/beet-datapack-utils/blob/main/docs/USAGE.md) | Configuring `beet.yml` for your versions |
 | [API reference](https://github.com/Neluxx/beet-datapack-utils/blob/main/docs/API.md) | All public classes and functions |
 | [Development](https://github.com/Neluxx/beet-datapack-utils/blob/main/docs/DEVELOPMENT.md) | Setting up the project, running tests and releasing |
 | [Contributing](https://github.com/Neluxx/beet-datapack-utils/blob/main/docs/CONTRIBUTING.md) | Commit conventions and guidelines |
