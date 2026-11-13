@@ -54,6 +54,8 @@ jobs:
   publish-testpypi:
     name: Publish to TestPyPI
     needs: build
+    # TEMPORARY: 0.1.0 already exists on TestPyPI from a test upload. Revert after v0.1.0.
+    if: false
     runs-on: ubuntu-latest
     environment:
       name: testpypi
@@ -75,7 +77,8 @@ jobs:
 
   publish-pypi:
     name: Publish to PyPI
-    needs: publish-testpypi
+    # TEMPORARY: normally needs publish-testpypi. Revert after v0.1.0.
+    needs: build
     runs-on: ubuntu-latest
     # The "pypi" environment requires a manual approval (see docs), so this job
     # waits until the TestPyPI release has been checked.
