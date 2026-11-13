@@ -1,3 +1,5 @@
+from typing import ClassVar
+
 import pytest
 from beet import DataPack, run_beet
 from beet.contrib.worldgen import (
@@ -30,7 +32,7 @@ def vanilla_pack(version: str) -> DataPack:
 class FakeVanilla:
     """Stands in for beet's Vanilla service without downloading the game."""
 
-    mounts: list[str] = []
+    mounts: ClassVar[list[str]] = []
     instances = 0
 
     def __init__(self, ctx=None):
