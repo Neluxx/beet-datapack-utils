@@ -1,10 +1,49 @@
 # beet-datapack-utils
 
-A Python library that provides helper functions for Minecraft datapacks using [beet](https://github.com/mcbeet/beet).
+A Python library with helpers for building multi-version Minecraft datapacks with [beet](https://github.com/mcbeet/beet).
 
-Minecraft keeps changing the data format of datapacks: folders get renamed, fields move or are removed. A datapack that supports several Minecraft versions with one build needs a base pack and an overlay for each version, and each of them needs its own copy of every vanilla file it changes.
+Minecraft changes the datapack format regularly: folders are renamed, fields move or disappear. To support several Minecraft versions from one build, you need a base pack plus one overlay per version, and each of them needs its own patched copy of every vanilla file you change.
 
-This library takes care of that. For the base pack and every overlay, it copies the matching vanilla file, hides the format differences between the versions and writes the patched file back. Your plugins only describe *what* to change:
+This library does that work for you. For the base pack and every overlay, it copies the matching vanilla file, smooths over the format differences and writes the patched file back. Your plugin only describes *what* to change.
+
+## Features
+
+- **One plugin for all versions:** loop over the base pack and all overlays with `Targets`.
+- **Vanilla patching:** copy, edit and write a vanilla file in a single `with` block. Each vanilla version is downloaded once, and only when needed.
+- **Version differences:** helpers for moved registries and renamed or restructured fields.
+- **Safe density function edits:** search and replace nodes in JSON trees, and fail the build if the vanilla structure has changed.
+
+## Quick start
+
+**Requirements:** Python 3.14 or newer and a package manager. [uv](https://docs.astral.sh/uv/) is recommended.
+
+**1. Install** the package in your datapack project:
+
+```bash
+uv add beet-datapack-utils
+```
+
+**2. Configure `beet.yml`.** Set the Minecraft version of the base pack and of each overlay:
+
+```yaml
+pipeline:
+  - src.plugins.canyon
+
+meta:
+  base_version: "1.21.9"
+  overlay_versions:
+    v26_3: "26.3"
+
+data_pack:
+  min_format: 88   # 1.21.9
+  max_format: 121  # 26.3
+  overlays:
+    - directory: v26_3
+      min_format: 121
+      max_format: 121
+```
+
+**3. Write a plugin** in e.g. `src/plugins/canyon.py`:
 
 ```python
 from beet import Context
@@ -18,34 +57,21 @@ def beet_default(ctx: Context):
             worldgen_config(carver)["probability"] = 0
 ```
 
-This one plugin disables canyons in every version, even though the file is `worldgen/configured_carver/canyon.json` with a `config` object before 26.3 and `worldgen/carver/canyon.json` without it since 26.3.
-
-## Features
-
-- **One plugin for all versions:** iterate over the base pack and all overlays with `Targets`.
-- **Vanilla patching:** copy, edit and write vanilla files in one `with` block. Each vanilla version is downloaded only once, and only when needed.
-- **Version differences:** helpers for moved registries and renamed or restructured fields.
-- **Safe edits of density functions:** search and replace nodes in JSON trees, and fail the build if the vanilla structure changed.
-
-## Quick start
-
-Requires Python 3.14+ and beet 0.119.0+.
+**4. Build** the datapack:
 
 ```bash
-uv add beet-datapack-utils
+uv run beet build
 ```
 
-Then declare the versions of the base pack and the overlays in your `beet.yml`, as described in [Configuring `beet.yml`](https://github.com/Neluxx/beet-datapack-utils/blob/main/docs/USAGE.md#configuring-beetyml).
+This one plugin disables canyons in every version. Before 26.3 the file is `worldgen/configured_carver/canyon.json` and has a `config` object. From 26.3 on it is `worldgen/carver/canyon.json` and has no `config` object.
 
 ## Documentation
 
-| Topic | Description |
+| Guide | Contents |
 | --- | --- |
-| [Installation](https://github.com/Neluxx/beet-datapack-utils/blob/main/docs/INSTALLATION.md) | Requirements and adding the package to your datapack |
-| [Usage](https://github.com/Neluxx/beet-datapack-utils/blob/main/docs/USAGE.md) | Configuring `beet.yml` for your versions |
-| [API reference](https://github.com/Neluxx/beet-datapack-utils/blob/main/docs/API.md) | All public classes and functions |
-| [Development](https://github.com/Neluxx/beet-datapack-utils/blob/main/docs/DEVELOPMENT.md) | Setting up the project, running tests and releasing |
-| [Contributing](https://github.com/Neluxx/beet-datapack-utils/blob/main/docs/CONTRIBUTING.md) | Commit conventions and guidelines |
+| [Installation](https://github.com/Neluxx/beet-datapack-utils/blob/main/docs/INSTALLATION.md) | Requirements, installing, building and updating |
+| [Usage](https://github.com/Neluxx/beet-datapack-utils/blob/main/docs/USAGE.md) | Configuring `beet.yml` and an overview of all helpers |
+| [Development](https://github.com/Neluxx/beet-datapack-utils/blob/main/docs/DEVELOPMENT.md) | Setup, tests, conventions and releasing |
 | [Changelog](https://github.com/Neluxx/beet-datapack-utils/blob/main/CHANGELOG.md) | Changes in each release |
 
 ## License

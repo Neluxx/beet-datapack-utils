@@ -21,7 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Dependencies
 
-## [v0.1.0](https://github.com/Neluxx/beet-datapack-utils/releases/tag/v0.1.0) - 2026-11-12
+## [v0.1.0](https://github.com/Neluxx/beet-datapack-utils/releases/tag/v0.1.0) - 2026-11-17
 
 ### Added
 - `Targets` service and `Target.patch` to copy, modify and write vanilla files for the base pack and every overlay

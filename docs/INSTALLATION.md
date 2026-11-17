@@ -2,25 +2,25 @@
 
 ## Requirements
 
-- [Python](https://www.python.org/) 3.14+
-- [beet](https://github.com/mcbeet/beet) 0.119.0+
-- A package manager such as [uv](https://docs.astral.sh/uv/)
+- [Python](https://www.python.org/) 3.14 or newer
+- [beet](https://github.com/mcbeet/beet) 0.119.0 or newer (installed automatically as a dependency)
+- A package manager. [uv](https://docs.astral.sh/uv/) is recommended.
 
-## Adding the package to your datapack
+## Install
 
-Add the package to the dependencies of your datapack:
+Run this in your datapack project:
 
 ```bash
 uv add beet-datapack-utils
 ```
 
-With pip:
+If you use pip instead:
 
 ```bash
 pip install beet-datapack-utils
 ```
 
-Or add it to the `pyproject.toml` of your datapack yourself and run `uv lock`:
+You can also add the package to your `pyproject.toml` yourself and then run `uv lock`:
 
 ```toml
 [project]
@@ -30,28 +30,20 @@ dependencies = [
 ]
 ```
 
-## Building
-
-Build your datapack with:
+## Build
 
 ```bash
 uv run beet build
 ```
 
-Do not use `uvx beet`: it runs beet in an isolated environment without your dependencies, so the import of `beet_datapack_utils` fails.
+Use `uv run beet`, not `uvx beet`. `uvx` runs beet in an isolated environment without your project's dependencies, so importing `beet_datapack_utils` fails.
 
-The first build that reads vanilla files downloads the needed Minecraft versions. Packs that only write their own files build offline.
+The first build that reads vanilla files downloads the Minecraft versions it needs. Packs that only write their own files build offline.
 
-## Updating
+## Update
 
 ```bash
 uv lock --upgrade-package beet-datapack-utils
 ```
 
-See the [changelog](../CHANGELOG.md) for what changed. Major versions may rename or remove public functions.
-
-## Next steps
-
-- [Usage](USAGE.md): configure `beet.yml` for your versions.
-- [API reference](API.md): all public classes and functions.
-- To try an unreleased version from a local checkout, see [Development](DEVELOPMENT.md#trying-changes-in-a-datapack).
+Check the [changelog](../CHANGELOG.md) before updating. A new major version may rename or remove public functions.
