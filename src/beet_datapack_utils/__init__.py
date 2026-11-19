@@ -7,7 +7,7 @@ file of that version, lets you edit it and writes it back.
 """
 
 from .density import WRAPPER_TYPES, is_reference, unwrap
-from .fields import octave_key, provider, resolve_key, set_range, worldgen_config
+from .fields import resolve_key, set_range, worldgen_config
 from .file_types import CARVER, FEATURE, Moved
 from .target import Target, targets
 from .trees import find_nodes, replace_nodes
@@ -20,8 +20,6 @@ __all__ = [
     "Target",
     "find_nodes",
     "is_reference",
-    "octave_key",
-    "provider",
     "replace_nodes",
     "resolve_key",
     "set_range",

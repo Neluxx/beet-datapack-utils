@@ -1,6 +1,6 @@
 import pytest
 
-from beet_datapack_utils import octave_key, provider, resolve_key, set_range, worldgen_config
+from beet_datapack_utils import resolve_key, set_range, worldgen_config
 
 
 def test_worldgen_config():
@@ -11,31 +11,34 @@ def test_worldgen_config():
 
 
 def test_resolve_key():
-    assert resolve_key({"yScale": 1}, "room_vertical_radius_multiplier", "yScale") == "yScale"
+    assert resolve_key({"base_octave": -9}, "base_octave", "firstOctave") == "base_octave"
+    assert resolve_key({"firstOctave": -9}, "base_octave", "firstOctave") == "firstOctave"
     with pytest.raises(KeyError):
         resolve_key({}, "a", "b")
 
 
-def test_octave_key():
-    assert octave_key({"firstOctave": -9}) == "firstOctave"
-    assert octave_key({"base_octave": -9, "base_amplitude": 0.9}) == "base_octave"
-
-
-def test_provider_unwraps_legacy_value():
-    legacy = {"radius": {"type": "minecraft:uniform", "value": {"min_inclusive": 2}}}
-    modern = {"radius": {"type": "minecraft:uniform", "min_inclusive": 2}}
-    assert provider(legacy, "radius") == {"min_inclusive": 2}
-    assert provider(modern, "radius") is modern["radius"]
-    with pytest.raises(TypeError):
-        provider({"radius": 3}, "radius")
-
-
 def test_set_range_float_and_int():
-    floats = {"type": "minecraft:uniform", "min_inclusive": 0.7, "max_exclusive": 1.4}
-    ints = {"type": "minecraft:uniform", "min_inclusive": 2, "max_inclusive": 5}
-    set_range(floats, 0.8, 1.5)
-    set_range(ints, 0, 0)
-    assert floats == {"type": "minecraft:uniform", "min_inclusive": 0.8, "max_exclusive": 1.5}
-    assert ints == {"type": "minecraft:uniform", "min_inclusive": 0, "max_inclusive": 0}
-    with pytest.raises(KeyError):
-        set_range({"type": "minecraft:constant", "value": 1}, 0, 1)
+    config = {
+        "floats": {"type": "minecraft:uniform", "min_inclusive": 0.7, "max_exclusive": 1.4},
+        "ints": {"type": "minecraft:uniform", "min_inclusive": 2, "max_inclusive": 5},
+    }
+    set_range(config, "floats", 0.8, 1.5)
+    set_range(config, "ints", 0, 0)
+    assert config == {
+        "floats": {"type": "minecraft:uniform", "min_inclusive": 0.8, "max_exclusive": 1.5},
+        "ints": {"type": "minecraft:uniform", "min_inclusive": 0, "max_inclusive": 0},
+    }
+
+
+def test_set_range_before_1_20_5():
+    config = {
+        "radius": {"type": "minecraft:uniform", "value": {"min_inclusive": 2, "max_inclusive": 3}}
+    }
+    set_range(config, "radius", 2, 5)
+    assert config["radius"]["value"] == {"min_inclusive": 2, "max_inclusive": 5}
+
+
+@pytest.mark.parametrize("node", [3, {"type": "minecraft:constant", "value": 1}])
+def test_set_range_rejects_non_ranges(node):
+    with pytest.raises(ValueError, match="radius"):
+        set_range({"radius": node}, "radius", 0, 1)
