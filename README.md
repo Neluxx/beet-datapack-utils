@@ -8,9 +8,9 @@ This library does that work for you. For the base pack and every overlay, it cop
 
 ## Features
 
-- **One plugin for all versions:** loop over the base pack and all overlays with `Targets`.
-- **Vanilla patching:** copy, edit and write a vanilla file in a single `with` block. Each vanilla version is downloaded once, and only when needed.
-- **Version differences:** helpers for moved registries and renamed or restructured fields.
+- **One plugin for all versions:** loop over the base pack and all overlays with `targets(ctx)`.
+- **Vanilla patching:** copy, edit and write a vanilla file in a single `with` block. Vanilla is only downloaded when needed.
+- **Version differences:** helpers for moved folders and renamed or restructured fields.
 - **Safe density function edits:** search and replace nodes in JSON trees, and fail the build if the vanilla structure has changed.
 
 ## Quick start
@@ -48,11 +48,11 @@ data_pack:
 ```python
 from beet import Context
 
-from beet_datapack_utils import CARVER, Targets, worldgen_config
+from beet_datapack_utils import CARVER, targets, worldgen_config
 
 
 def beet_default(ctx: Context):
-    for target in ctx.inject(Targets):
+    for target in targets(ctx):
         with target.patch(CARVER, "minecraft:canyon") as carver:
             worldgen_config(carver)["probability"] = 0
 ```

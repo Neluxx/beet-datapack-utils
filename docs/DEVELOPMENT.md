@@ -45,18 +45,16 @@ Then run `uv sync` and `uv run beet build` in the datapack. Remove the entry aga
 ├── docs/                  # Documentation
 ├── src/beet_datapack_utils/
 │   ├── __init__.py        # Public API
-│   ├── targets.py         # Targets service and Target
-│   ├── registries.py      # CARVER, FEATURE, VersionedRegistry
+│   ├── target.py          # targets() and Target
+│   ├── file_types.py      # CARVER, FEATURE, Moved
 │   ├── fields.py          # Fields that changed between versions
-│   ├── trees.py           # find_nodes, replace_nodes
-│   ├── density.py         # Density function helpers
-│   └── versions.py        # Version parsing and comparison
+│   └── density.py         # Density function helpers
 ├── tests/
 ├── CHANGELOG.md
 └── pyproject.toml
 ```
 
-When you add a public helper, export it in `__init__.py` (including `__all__`) and add it to the helper tables in [USAGE.md](USAGE.md).
+When you add a public helper, export it in `__init__.py` (including `__all__`) and add it to the helper tables in [USAGE.md](USAGE.md). Only add helpers that a real datapack needs.
 
 ## Conventions
 
