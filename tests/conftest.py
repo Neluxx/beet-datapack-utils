@@ -1,5 +1,3 @@
-from typing import ClassVar
-
 import pytest
 from beet import DataPack, run_beet
 from beet.contrib.worldgen import (
@@ -9,7 +7,7 @@ from beet.contrib.worldgen import (
     worldgen,
 )
 
-import beet_datapack_utils.targets
+import beet_datapack_utils.target
 
 CANYON_OLD = {"type": "minecraft:canyon", "config": {"probability": 0.01}}
 CANYON_NEW = {"type": "minecraft:canyon", "probability": 0.01}
@@ -32,7 +30,6 @@ def vanilla_pack(version: str) -> DataPack:
 class FakeVanilla:
     """Stands in for beet's Vanilla service without downloading the game."""
 
-    mounts: ClassVar[list[str]] = []
     instances = 0
 
     def __init__(self, ctx=None):
@@ -47,8 +44,6 @@ class FakeVanilla:
             self.version = version
 
         def mount(self, _prefix: str):
-            FakeVanilla.mounts.append(self.version)
-
             class Mounted:
                 data = vanilla_pack(self.version)
 
@@ -57,9 +52,8 @@ class FakeVanilla:
 
 @pytest.fixture
 def fake_vanilla(monkeypatch):
-    FakeVanilla.mounts = []
     FakeVanilla.instances = 0
-    monkeypatch.setattr(beet_datapack_utils.targets, "Vanilla", FakeVanilla)
+    monkeypatch.setattr(beet_datapack_utils.target, "Vanilla", FakeVanilla)
     return FakeVanilla
 
 

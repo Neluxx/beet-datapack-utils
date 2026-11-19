@@ -1,37 +1,31 @@
-"""Helper functions for Minecraft datapacks using beet.
+"""Helpers for building multi-version Minecraft datapacks with beet.
 
-A datapack build has a base pack and overlays, each for a Minecraft version
-(`meta.base_version` and `meta.overlay_versions` in the beet config). These
-helpers copy the matching vanilla files, hide format differences between
-versions and write the patched files back.
+A build has a base pack and overlays, each for one Minecraft version
+(`meta.base_version` and `meta.overlay_versions` in the beet config).
+`targets(ctx)` returns one `Target` per pack; `Target.patch` copies a vanilla
+file of that version, lets you edit it and writes it back.
 """
 
 from .density import WRAPPER_TYPES, is_reference, unwrap
 from .fields import octave_key, provider, resolve_key, set_range, worldgen_config
-from .registries import CARVER, FEATURE, RegistryLike, VersionedRegistry, resolve_registry
-from .targets import Target, Targets
+from .file_types import CARVER, FEATURE, Moved
+from .target import Target, targets
 from .trees import find_nodes, replace_nodes
-from .versions import Version, VersionLike, parse_version
 
 __all__ = [
     "CARVER",
     "FEATURE",
     "WRAPPER_TYPES",
-    "RegistryLike",
+    "Moved",
     "Target",
-    "Targets",
-    "Version",
-    "VersionLike",
-    "VersionedRegistry",
     "find_nodes",
     "is_reference",
     "octave_key",
-    "parse_version",
     "provider",
     "replace_nodes",
     "resolve_key",
-    "resolve_registry",
     "set_range",
+    "targets",
     "unwrap",
     "worldgen_config",
 ]

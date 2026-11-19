@@ -2,25 +2,33 @@ import pytest
 from beet import Context
 from beet.contrib.worldgen import WorldgenCarver, WorldgenConfiguredCarver
 
-from beet_datapack_utils import CARVER, Target, Targets, Version, worldgen_config
+from beet_datapack_utils import CARVER, targets, worldgen_config
 
 
 def disable_canyons(ctx: Context):
-    for target in ctx.inject(Targets):
+    for target in targets(ctx):
         with target.patch(CARVER, "minecraft:canyon") as carver:
             worldgen_config(carver)["probability"] = 0
 
 
 def failing_patch(ctx: Context):
-    for target in ctx.inject(Targets):
+    for target in targets(ctx):
         with target.patch(CARVER, "minecraft:canyon") as carver:
             worldgen_config(carver)["probability"] = 0
             raise RuntimeError("boom")
 
 
-def reuse_targets(ctx: Context):
-    for target in ctx.inject(Targets):
-        target.vanilla  # noqa: B018 - mount again through the shared service
+def test_targets(build):
+    ctx = build()
+    base, overlay = targets(ctx)
+    assert (base.pack, base.version) == (ctx.data, "1.21.9")
+    assert (overlay.pack, overlay.version) == (ctx.data.overlays["v26_3"], "26.3")
+
+
+def test_missing_base_version(build):
+    ctx = build(meta={"overlay_versions": {}})
+    with pytest.raises(KeyError, match="base_version"):
+        targets(ctx)
 
 
 def test_patch_writes_each_version_in_its_format(build):
@@ -35,28 +43,21 @@ def test_patch_writes_each_version_in_its_format(build):
     assert "minecraft:canyon" not in ctx.data[WorldgenCarver]
 
 
-def test_targets_are_shared_and_vanilla_is_mounted_once(build, fake_vanilla):
-    ctx = build(disable_canyons, reuse_targets)
-    assert ctx.inject(Targets) is ctx.inject(Targets)
-    assert sorted(fake_vanilla.mounts) == ["1.21.9", "26.3"]
-
-
-def test_vanilla_is_only_created_when_needed(build, fake_vanilla):
+def test_patch_accepts_plain_file_types(build):
     ctx = build()
-    for target in ctx.inject(Targets):
-        assert target.pack is not None
-    assert fake_vanilla.instances == 0
+    base, _ = targets(ctx)
+    with base.patch(WorldgenConfiguredCarver, "minecraft:canyon") as carver:
+        carver["config"]["probability"] = 0.5
+    assert ctx.data[WorldgenConfiguredCarver]["minecraft:canyon"].data["config"] == {
+        "probability": 0.5
+    }
 
+
+def test_vanilla_is_only_loaded_when_needed(build, fake_vanilla):
+    build(lambda ctx: targets(ctx))
+    assert fake_vanilla.instances == 0
     build(disable_canyons)
     assert fake_vanilla.instances == 1
-
-
-def test_target_properties(build):
-    ctx = build()
-    base, overlay = ctx.inject(Targets)
-    assert (base.version, base.directory, base.is_overlay) == (Version("1.21.9"), None, False)
-    assert (overlay.version, overlay.directory, overlay.is_overlay) == ("26.3", "v26_3", True)
-    assert overlay.at_least("26.3") and not base.at_least("26.3")
 
 
 def test_failed_patch_writes_nothing(build):
@@ -68,30 +69,20 @@ def test_failed_patch_writes_nothing(build):
 
 def test_missing_file_has_helpful_error(build):
     ctx = build()
-    base = next(iter(ctx.inject(Targets)))
-    with pytest.raises(KeyError, match="minecraft:missing"):
-        base.copy(WorldgenConfiguredCarver, "minecraft:missing")
+    base, _ = targets(ctx)
+    with (
+        pytest.raises(KeyError, match="minecraft:missing"),
+        base.patch(CARVER, "minecraft:missing"),
+    ):
+        pass
 
 
 def test_inline_density_function(build):
     ctx = build()
-    _, overlay = ctx.inject(Targets)
+    _, overlay = targets(ctx)
     inlined = overlay.inline_density_function("minecraft:overworld/final_density")
     assert inlined["type"] == "minecraft:min"
     inlined["left"] = 1  # a copy, vanilla stays untouched
-    assert overlay.inline_density_function("minecraft:overworld/final_density")["left"] == (
-        "minecraft:a"
-    )
+    again = overlay.inline_density_function("minecraft:overworld/final_density")
+    assert again["left"] == "minecraft:a"
     assert overlay.inline_density_function({"type": "minecraft:add"}) == {"type": "minecraft:add"}
-
-
-def test_missing_base_version(build):
-    with pytest.raises(Exception, match="base_version"):
-        ctx = build(meta={"overlay_versions": {}})
-        list(ctx.inject(Targets))
-
-
-def test_target_without_vanilla():
-    target = Target(pack=None, version=Version("26.3"))
-    with pytest.raises(RuntimeError):
-        target.vanilla  # noqa: B018
