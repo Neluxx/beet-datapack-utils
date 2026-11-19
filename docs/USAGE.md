@@ -35,16 +35,16 @@ data_pack:
 
 ## Writing a plugin
 
-Inject `Targets` and loop over it. You get one `Target` for the base pack and one for each overlay:
+Loop over `targets(ctx)`. You get one `Target` for the base pack and one for each overlay. `target.patch` copies the vanilla file of the target's version, lets you edit its JSON and writes it into the target's pack:
 
 ```python
 from beet import Context
 
-from beet_datapack_utils import CARVER, Targets, worldgen_config
+from beet_datapack_utils import CARVER, targets, worldgen_config
 
 
 def beet_default(ctx: Context):
-    for target in ctx.inject(Targets):
+    for target in targets(ctx):
         with target.patch(CARVER, "minecraft:canyon") as carver:
             worldgen_config(carver)["probability"] = 0
 ```
@@ -57,55 +57,56 @@ Everything below can be imported directly from `beet_datapack_utils`.
 
 | Name | Description |
 | --- | --- |
-| `Targets` | Beet service (`ctx.inject(Targets)`) that yields one `Target` for the base pack and one for each overlay. All plugins in a build share it, so each vanilla version is loaded only once. Supports `len()`. Raises `KeyError` if `meta.base_version` is missing. |
-| `Target.pack` | The output pack this target writes to |
-| `Target.version` | The target's Minecraft `Version` |
-| `Target.directory` | The overlay directory, or `None` for the base pack |
-| `Target.is_overlay` | `True` for overlays, `False` for the base pack |
-| `Target.at_least(version)` | `True` if the target's version is `version` or newer |
-| `Target.patch(registry, name)` | Context manager that copies a vanilla file, yields its JSON for editing and writes it into the target pack. Nothing is written if the block raises an error. |
-| `Target.copy(registry, name)` | Returns an independent copy of a vanilla file. Raises `KeyError` if the file doesn't exist in the target's version. |
-| `Target.write(registry, name, file)` | Writes a file into the target pack |
-| `Target.file_type(registry)` | The beet file type that `registry` resolves to for the target's version |
-| `Target.vanilla` | The vanilla data pack for the target's version. It is downloaded the first time you access it. |
+| `targets(ctx)` | Returns one `Target` for the base pack and one for each overlay. Raises `KeyError` if `meta.base_version` is missing. |
+| `Target.pack` | The output pack of this target. Use it to add your own files, e.g. `target.pack[Function]["my:tick"] = Function([...])`. |
+| `Target.version` | The target's Minecraft version, e.g. `"26.3"` |
+| `Target.patch(file_type, name)` | Copies a vanilla file, yields its JSON for editing and writes it into `pack`. Nothing is written if the block raises an error. Raises `KeyError` if the file doesn't exist in the target's version. |
 | `Target.inline_density_function(node)` | If `node` is an ID, returns a copy of that vanilla density function. Otherwise returns `node` unchanged. |
 
-### Registries
+### File types
 
-You can pass any beet file type (for example, `WorldgenNoise`) as `registry`. For resources whose folder moved between versions, pass a `VersionedRegistry` instead.
+`file_type` can be any beet file type, e.g. `WorldgenNoise` or `WorldgenNoiseSettings`. For files whose folder moved between versions, use one of these:
 
 | Name | Description |
 | --- | --- |
 | `CARVER` | `worldgen/configured_carver` before 26.3, `worldgen/carver` from 26.3 on |
 | `FEATURE` | `worldgen/configured_feature` before 26.3, `worldgen/feature` from 26.3 on |
-| `VersionedRegistry(default, changes)` | Defines your own moved registry. Example: `VersionedRegistry(OldType, (("26.3", NewType),))` |
-| `resolve_registry(registry, version)` | Returns the file type a registry uses in a given version |
+| `Moved(before, after, since)` | Defines your own moved file type, e.g. `Moved(OldType, NewType, since="27.1")` |
 
 ### Fields
 
 | Name | Description |
 | --- | --- |
 | `worldgen_config(data)` | Returns the settings object of a carver or feature (the `config` wrapper was removed in 26.3) |
-| `provider(config, name)` | Returns the int/float provider `name`, unwrapping the `value` object used before 1.20.5. Raises `TypeError` if the field is a constant. |
-| `set_range(provider, minimum, maximum)` | Sets `min_inclusive` and either `max_exclusive` or `max_inclusive`, whichever the provider uses. Raises `KeyError` if the provider isn't a range. |
-| `resolve_key(data, *candidates)` | Returns the first key that exists, for renamed fields (e.g. `yScale` → `room_vertical_radius_multiplier`). Raises `KeyError` if none of them exist. |
-| `octave_key(noise)` | Returns `firstOctave` or `base_octave`, the name used from 26.3 on |
+| `set_range(config, name, minimum, maximum)` | Sets the bounds of the uniform provider `config[name]`. Handles the `value` wrapper used before 1.20.5 and both `max_exclusive` and `max_inclusive`. Raises `ValueError` if the field isn't a range. |
+| `resolve_key(data, *candidates)` | Returns the first key that exists, for renamed fields, e.g. `resolve_key(noise, "base_octave", "firstOctave")`. Raises `KeyError` if none of them exist. |
 
-### JSON trees and density functions
+### Density functions
 
 | Name | Description |
 | --- | --- |
-| `find_nodes(tree, match)` | Yields every node below `tree` (depth first, not including `tree` itself) for which `match(node)` returns `True` |
-| `replace_nodes(tree, match, replacement, expected=None)` | Replaces matching nodes below `tree` and returns how many it replaced. It doesn't descend into replaced nodes. If you pass `expected` and the number of matches differs, it raises `ValueError` and changes nothing. |
-| `unwrap(node)` | Removes caching and interpolation wrappers (`cache_once`, `interpolated`, …) from a density function |
-| `is_reference(node, function_id)` | `True` if `node` references `function_id`, directly or through wrappers |
-| `WRAPPER_TYPES` | The set of density function types that `unwrap` removes |
+| `is_reference(node, function_id)` | `True` if `node` references `function_id`, directly or through cache/interpolation wrappers |
+| `replace_nodes(tree, match, replacement, count=n)` | Replaces every node below `tree` for which `match(node)` is `True`. Exactly `count` nodes must match, otherwise it raises `ValueError` and changes nothing, so your build fails when vanilla changes. Nodes inside a match are not searched. |
 
-### Versions
+## Examples
 
-| Name | Description |
-| --- | --- |
-| `Version(version)` | A Minecraft release version that compares with other versions and plain strings, e.g. `Version("1.21.9") < "26.3"`. `1.21` and `1.21.0` count as equal. Raises `ValueError` for snapshots and pre-releases. |
-| `parse_version(version)` | Same as `Version(version)` |
-| `VersionLike` | Type alias for `Version \| str` |
-| `RegistryLike` | Type alias for a beet file type or a `VersionedRegistry` |
+Change a range and a renamed field:
+
+```python
+with target.patch(CARVER, "minecraft:cave") as cave:
+    config = worldgen_config(cave)
+    set_range(config, "horizontal_radius_multiplier", 0.8, 1.5)
+    room = resolve_key(config, "room_vertical_radius_multiplier", "yScale")
+    set_range(config, room, 0.1, 0.9)
+```
+
+Replace a node in a density function:
+
+```python
+NOODLE = "minecraft:overworld/caves/noodle"
+
+with target.patch(WorldgenNoiseSettings, "minecraft:overworld") as settings:
+    router = settings["noise_router"]
+    router["final_density"] = target.inline_density_function(router["final_density"])
+    replace_nodes(router["final_density"], lambda node: node == NOODLE, 1, count=1)
+```

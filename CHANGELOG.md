@@ -10,10 +10,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 ### Changed
+- **Breaking:** `ctx.inject(Targets)` is replaced by the function `targets(ctx)`
+- **Breaking:** `set_range(config, name, minimum, maximum)` takes the config and the field name and replaces `set_range(provider(config, name), ...)`
+- **Breaking:** `replace_nodes` requires the keyword `count` (formerly the optional `expected`) and returns nothing
+- **Breaking:** `VersionedRegistry` is replaced by `Moved(before, after, since)`
+- `Target.version` is a plain string
 
 ### Deprecated
 
 ### Removed
+- `Targets`, `provider`, `octave_key` (use `resolve_key(noise, "base_octave", "firstOctave")`), `find_nodes`, `unwrap`, `WRAPPER_TYPES`, `resolve_registry`, `RegistryLike`, `Version`, `VersionLike` and `parse_version`
+- `Target.directory`, `Target.is_overlay`, `Target.at_least`, `Target.copy`, `Target.write`, `Target.file_type` and `Target.vanilla`
 
 ### Fixed
 
