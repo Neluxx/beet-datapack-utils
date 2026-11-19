@@ -6,24 +6,20 @@ A build has a base pack and overlays, each for one Minecraft version
 file of that version, lets you edit it and writes it back.
 """
 
-from .density import WRAPPER_TYPES, is_reference, unwrap
+from .density import is_reference, replace_nodes
 from .fields import resolve_key, set_range, worldgen_config
 from .file_types import CARVER, FEATURE, Moved
 from .target import Target, targets
-from .trees import find_nodes, replace_nodes
 
 __all__ = [
     "CARVER",
     "FEATURE",
-    "WRAPPER_TYPES",
     "Moved",
     "Target",
-    "find_nodes",
     "is_reference",
     "replace_nodes",
     "resolve_key",
     "set_range",
     "targets",
-    "unwrap",
     "worldgen_config",
 ]
