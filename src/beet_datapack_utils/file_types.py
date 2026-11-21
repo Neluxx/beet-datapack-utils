@@ -30,7 +30,7 @@ class Moved:
         >>> CARVER.for_version("26.3") is WorldgenCarver
         True
         """
-        return self.after if _parse(version) >= _parse(self.since) else self.before
+        return self.after if _parse_version(version) >= _parse_version(self.since) else self.before
 
 
 #: `worldgen/configured_carver` became `worldgen/carver` in 26.3.
@@ -40,7 +40,7 @@ CARVER = Moved(WorldgenConfiguredCarver, WorldgenCarver, since="26.3")
 FEATURE = Moved(WorldgenConfiguredFeature, WorldgenFeature, since="26.3")
 
 
-def _parse(version: str) -> tuple[int, ...]:
+def _parse_version(version: str) -> tuple[int, ...]:
     try:
         return tuple(int(part) for part in version.split("."))
     except ValueError:
