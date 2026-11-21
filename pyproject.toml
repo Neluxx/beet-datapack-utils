@@ -1,5 +1,5 @@
 [build-system]
-requires = ["uv_build>=0.13.8,<0.14"]
+requires = ["uv_build>=0.13.9,<0.14"]
 build-backend = "uv_build"
 
 [project]
@@ -30,7 +30,7 @@ classifiers = [
     "Typing :: Typed",
 ]
 dependencies = [
-    "beet>=0.119.0",
+    "beet>=0.121.2",
 ]
 
 [project.urls]
@@ -40,8 +40,8 @@ Changelog = "https://github.com/Neluxx/beet-datapack-utils/blob/main/CHANGELOG.m
 
 [dependency-groups]
 dev = [
-    "pytest>=8",
-    "ruff>=0.6",
+    "pytest>=9.2.0",
+    "ruff>=0.17.5",
 ]
 
 [tool.uv.build-backend]
