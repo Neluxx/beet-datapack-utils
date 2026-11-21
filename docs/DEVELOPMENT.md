@@ -23,7 +23,7 @@ uv run ruff check      # linting
 uv run ruff format     # formatting
 ```
 
-The tests replace beet's `Vanilla` service with a small in-memory fake (see `tests/conftest.py`), so they run offline and never download Minecraft.
+The tests never download Minecraft. `Target` receives a function that loads the vanilla pack, so most tests pass an in-memory fake directly. Tests that run a whole beet build replace beet's `Vanilla` service instead (see `tests/conftest.py`).
 
 CI runs `ruff format --check`, `ruff check`, `pytest` and `uv build` on every pull request and on every push to `main`.
 
@@ -49,7 +49,7 @@ Then run `uv sync` and `uv run beet build` in the datapack. Remove the entry aga
 │   ├── file_types.py      # CARVER, FEATURE, Moved
 │   ├── fields.py          # Fields that changed between versions
 │   └── density.py         # Density function helpers
-├── tests/
+├── tests/                 # One test_<module>.py per module
 ├── CHANGELOG.md
 └── pyproject.toml
 ```
