@@ -10,6 +10,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 ### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+### Dependencies
+
+## [v0.2.0](https://github.com/Neluxx/beet-datapack-utils/releases/tag/v0.2.0) - 2026-11-21
+
+### Changed
 - **Breaking:** `ctx.inject(Targets)` is replaced by the function `targets(ctx)`
 - **Breaking:** `set_range(config, name, minimum, maximum)` takes the config and the field name and replaces `set_range(provider(config, name), ...)`
 - **Breaking:** `replace_nodes` requires the keyword `count` (formerly the optional `expected`) and returns nothing
@@ -17,17 +31,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Target.version` is a plain string
 - `Target(pack, version, load_vanilla)` takes a function that loads the vanilla pack instead of the beet context
 
-### Deprecated
-
 ### Removed
 - `Targets`, `provider`, `octave_key` (use `resolve_key(noise, "base_octave", "firstOctave")`), `find_nodes`, `unwrap`, `WRAPPER_TYPES`, `resolve_registry`, `RegistryLike`, `Version`, `VersionLike` and `parse_version`
 - `Target.directory`, `Target.is_overlay`, `Target.at_least`, `Target.copy`, `Target.write`, `Target.file_type` and `Target.vanilla`
-
-### Fixed
-
-### Security
-
-### Dependencies
 
 ## [v0.1.0](https://github.com/Neluxx/beet-datapack-utils/releases/tag/v0.1.0) - 2026-11-17
 
