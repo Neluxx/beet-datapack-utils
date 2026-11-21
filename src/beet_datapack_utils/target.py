@@ -1,8 +1,8 @@
 """Patch vanilla files for the base pack and every overlay."""
 
-from collections.abc import Iterator
+from collections.abc import Callable, Iterator
 from contextlib import contextmanager
-from functools import cached_property
+from functools import cached_property, partial
 from typing import Any
 
 from beet import Context, DataPack, JsonFile
@@ -12,6 +12,9 @@ from beet.contrib.worldgen import WorldgenDensityFunction
 from .file_types import Moved
 
 __all__ = ["Target", "targets"]
+
+#: Returns the vanilla data pack of a Minecraft version.
+VanillaLoader = Callable[[str], DataPack]
 
 
 def targets(ctx: Context) -> list[Target]:
@@ -28,19 +31,20 @@ def targets(ctx: Context) -> list[Target]:
     if "base_version" not in meta:
         raise KeyError("Missing `meta.base_version` in the beet config")
 
-    result = [Target(ctx, ctx.data, str(meta["base_version"]))]
+    load_vanilla = partial(_load_vanilla, ctx)
+    result = [Target(ctx.data, str(meta["base_version"]), load_vanilla)]
     for directory, version in meta.get("overlay_versions", {}).items():
-        result.append(Target(ctx, ctx.data.overlays[directory], str(version)))
+        result.append(Target(ctx.data.overlays[directory], str(version), load_vanilla))
     return result
 
 
 class Target:
     """One output pack (the base pack or an overlay) and its Minecraft version."""
 
-    def __init__(self, ctx: Context, pack: DataPack, version: str):
+    def __init__(self, pack: DataPack, version: str, load_vanilla: VanillaLoader):
         self.pack = pack
         self.version = version
-        self._ctx = ctx
+        self._load_vanilla = load_vanilla
 
     @contextmanager
     def patch(self, file_type: type[JsonFile] | Moved, name: str) -> Iterator[Any]:
@@ -78,5 +82,9 @@ class Target:
     @cached_property
     def _vanilla(self) -> DataPack:
         # Loaded on first use, so packs that never read vanilla build offline.
-        # beet caches the Vanilla service and its releases for the whole build.
-        return self._ctx.inject(Vanilla).releases[self.version].mount("data").data
+        return self._load_vanilla(self.version)
+
+
+def _load_vanilla(ctx: Context, version: str) -> DataPack:
+    # beet caches the Vanilla service and its releases for the whole build.
+    return ctx.inject(Vanilla).releases[version].mount("data").data

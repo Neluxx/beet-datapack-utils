@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Breaking:** `replace_nodes` requires the keyword `count` (formerly the optional `expected`) and returns nothing
 - **Breaking:** `VersionedRegistry` is replaced by `Moved(before, after, since)`
 - `Target.version` is a plain string
+- `Target(pack, version, load_vanilla)` takes a function that loads the vanilla pack instead of the beet context
 
 ### Deprecated
 
