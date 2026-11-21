@@ -1,8 +1,10 @@
 import pytest
-from beet import Context
+from beet import Context, DataPack
 from beet.contrib.worldgen import WorldgenCarver, WorldgenConfiguredCarver
 
-from beet_datapack_utils import CARVER, targets, worldgen_config
+from beet_datapack_utils import CARVER, Target, targets, worldgen_config
+
+FINAL_DENSITY = "minecraft:overworld/final_density"
 
 
 def disable_canyons(ctx: Context):
@@ -11,11 +13,7 @@ def disable_canyons(ctx: Context):
             worldgen_config(carver)["probability"] = 0
 
 
-def failing_patch(ctx: Context):
-    for target in targets(ctx):
-        with target.patch(CARVER, "minecraft:canyon") as carver:
-            worldgen_config(carver)["probability"] = 0
-            raise RuntimeError("boom")
+# -- targets(ctx), run inside a beet build -------------------------------------
 
 
 def test_targets(build):
@@ -43,16 +41,6 @@ def test_patch_writes_each_version_in_its_format(build):
     assert "minecraft:canyon" not in ctx.data[WorldgenCarver]
 
 
-def test_patch_accepts_plain_file_types(build):
-    ctx = build()
-    base, _ = targets(ctx)
-    with base.patch(WorldgenConfiguredCarver, "minecraft:canyon") as carver:
-        carver["config"]["probability"] = 0.5
-    assert ctx.data[WorldgenConfiguredCarver]["minecraft:canyon"].data["config"] == {
-        "probability": 0.5
-    }
-
-
 def test_vanilla_is_only_loaded_when_needed(build, fake_vanilla):
     build(lambda ctx: targets(ctx))
     assert fake_vanilla.instances == 0
@@ -60,29 +48,56 @@ def test_vanilla_is_only_loaded_when_needed(build, fake_vanilla):
     assert fake_vanilla.instances == 1
 
 
-def test_failed_patch_writes_nothing(build):
-    ctx = build()
-    with pytest.raises(RuntimeError, match="boom"):
-        failing_patch(ctx)
-    assert "minecraft:canyon" not in ctx.data[WorldgenConfiguredCarver]
+# -- Target on its own ---------------------------------------------------------
 
 
-def test_missing_file_has_helpful_error(build):
-    ctx = build()
-    base, _ = targets(ctx)
+def test_patch_accepts_plain_file_types(load_vanilla):
+    target = Target(DataPack(), "1.21.9", load_vanilla)
+    with target.patch(WorldgenConfiguredCarver, "minecraft:canyon") as carver:
+        carver["config"]["probability"] = 0.5
+    assert target.pack[WorldgenConfiguredCarver]["minecraft:canyon"].data["config"] == {
+        "probability": 0.5
+    }
+
+
+def test_failed_patch_writes_nothing(load_vanilla):
+    target = Target(DataPack(), "1.21.9", load_vanilla)
+    with (
+        pytest.raises(RuntimeError, match="boom"),
+        target.patch(CARVER, "minecraft:canyon") as carver,
+    ):
+        worldgen_config(carver)["probability"] = 0
+        raise RuntimeError("boom")
+    assert "minecraft:canyon" not in target.pack[WorldgenConfiguredCarver]
+
+
+def test_missing_file_has_helpful_error(load_vanilla):
+    target = Target(DataPack(), "1.21.9", load_vanilla)
     with (
         pytest.raises(KeyError, match="minecraft:missing"),
-        base.patch(CARVER, "minecraft:missing"),
+        target.patch(CARVER, "minecraft:missing"),
     ):
         pass
 
 
-def test_inline_density_function(build):
-    ctx = build()
-    _, overlay = targets(ctx)
-    inlined = overlay.inline_density_function("minecraft:overworld/final_density")
+def test_inline_density_function(load_vanilla):
+    target = Target(DataPack(), "26.3", load_vanilla)
+    inlined = target.inline_density_function(FINAL_DENSITY)
     assert inlined["type"] == "minecraft:min"
     inlined["left"] = 1  # a copy, vanilla stays untouched
-    again = overlay.inline_density_function("minecraft:overworld/final_density")
-    assert again["left"] == "minecraft:a"
-    assert overlay.inline_density_function({"type": "minecraft:add"}) == {"type": "minecraft:add"}
+    assert target.inline_density_function(FINAL_DENSITY)["left"] == "minecraft:a"
+    assert target.inline_density_function({"type": "minecraft:add"}) == {"type": "minecraft:add"}
+
+
+def test_vanilla_is_loaded_once_per_target(load_vanilla):
+    loaded = []
+
+    def counting_loader(version: str) -> DataPack:
+        loaded.append(version)
+        return load_vanilla(version)
+
+    target = Target(DataPack(), "26.3", counting_loader)
+    assert loaded == []
+    target.inline_density_function(FINAL_DENSITY)
+    target.inline_density_function(FINAL_DENSITY)
+    assert loaded == ["26.3"]

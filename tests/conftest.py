@@ -1,3 +1,5 @@
+from types import SimpleNamespace
+
 import pytest
 from beet import DataPack, run_beet
 from beet.contrib.worldgen import (
@@ -9,6 +11,7 @@ from beet.contrib.worldgen import (
 
 import beet_datapack_utils.target
 
+VANILLA_VERSIONS = ("1.21.9", "26.3")
 CANYON_OLD = {"type": "minecraft:canyon", "config": {"probability": 0.01}}
 CANYON_NEW = {"type": "minecraft:canyon", "probability": 0.01}
 FINAL_DENSITY = {"type": "minecraft:min", "left": "minecraft:a", "right": "minecraft:b"}
@@ -27,27 +30,28 @@ def vanilla_pack(version: str) -> DataPack:
     return pack
 
 
+class FakeRelease:
+    def __init__(self, version: str):
+        self.version = version
+
+    def mount(self, _prefix: str) -> SimpleNamespace:
+        return SimpleNamespace(data=vanilla_pack(self.version))
+
+
 class FakeVanilla:
     """Stands in for beet's Vanilla service without downloading the game."""
 
     instances = 0
 
-    def __init__(self, ctx=None):
+    def __init__(self, _ctx):
         FakeVanilla.instances += 1
-        self.releases = self
+        self.releases = {version: FakeRelease(version) for version in VANILLA_VERSIONS}
 
-    def __getitem__(self, version: str):
-        return self._Release(version)
 
-    class _Release:
-        def __init__(self, version: str):
-            self.version = version
-
-        def mount(self, _prefix: str):
-            class Mounted:
-                data = vanilla_pack(self.version)
-
-            return Mounted()
+@pytest.fixture
+def load_vanilla():
+    """A vanilla loader for creating a `Target` directly."""
+    return vanilla_pack
 
 
 @pytest.fixture
