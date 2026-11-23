@@ -60,7 +60,7 @@ Everything below can be imported directly from `beet_datapack_utils`.
 | `targets(ctx)` | Returns one `Target` for the base pack and one for each overlay. Raises `KeyError` if `meta.base_version` is missing or an overlay directory isn't configured, `TypeError` if a version isn't quoted. |
 | `Target.pack` | The output pack of this target. Use it to add your own files, e.g. `target.pack[Function]["my:tick"] = Function([...])`. |
 | `Target.version` | The target's Minecraft version, e.g. `"26.3"` |
-| `Target.patch(file_type, name)` | Copies a vanilla file, yields its JSON for editing and writes it into `pack`. Nothing is written if the block raises an error. Raises `KeyError` if the file doesn't exist in the target's version. |
+| `Target.patch(file_type, name)` | Copies the file, yields its JSON for editing and writes it into `pack`. Starts from the file in `pack` if it exists (e.g. patched by another plugin or from your own `src/datapack`), otherwise from vanilla. Nothing is written if the block raises an error. Raises `KeyError` if the file doesn't exist in the target's version. |
 | `Target.inline_density_function(node)` | If `node` is an ID, returns a copy of that vanilla density function. Otherwise returns `node` unchanged. |
 
 ### File types

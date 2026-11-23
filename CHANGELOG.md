@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 
 ### Fixed
+- `Target.patch` starts from the file already in the pack, so several plugins can patch the same file
 - Load the exact vanilla release. beet looks up releases by prefix, so `"1.19"` loaded 1.19.4
 - A vanilla version that can't be loaded is no longer reported as a missing file
 

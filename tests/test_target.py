@@ -83,6 +83,30 @@ def test_patch_accepts_plain_file_types(load_vanilla):
     }
 
 
+def test_second_patch_keeps_first_changes(load_vanilla):
+    target = Target(DataPack(), "1.21.9", load_vanilla)
+    with target.patch(CARVER, "minecraft:canyon") as carver:
+        worldgen_config(carver)["probability"] = 0
+    with target.patch(CARVER, "minecraft:canyon") as carver:
+        worldgen_config(carver)["y"] = 5
+    assert target.pack[WorldgenConfiguredCarver]["minecraft:canyon"].data["config"] == {
+        "probability": 0,
+        "y": 5,
+    }
+
+
+def test_failed_patch_keeps_existing_file(load_vanilla):
+    target = Target(DataPack(), "1.21.9", load_vanilla)
+    with target.patch(CARVER, "minecraft:canyon") as carver:
+        worldgen_config(carver)["probability"] = 0
+    with pytest.raises(RuntimeError), target.patch(CARVER, "minecraft:canyon") as carver:
+        worldgen_config(carver)["probability"] = 1
+        raise RuntimeError
+    assert target.pack[WorldgenConfiguredCarver]["minecraft:canyon"].data["config"] == {
+        "probability": 0
+    }
+
+
 def test_failed_patch_writes_nothing(load_vanilla):
     target = Target(DataPack(), "1.21.9", load_vanilla)
     with (

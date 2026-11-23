@@ -52,8 +52,10 @@ class Target:
 
     @contextmanager
     def patch(self, file_type: type[JsonFile] | Moved, name: str) -> Iterator[Any]:
-        """Copy a vanilla file, let the caller edit its JSON, then write it into `pack`.
+        """Copy a file, let the caller edit its JSON, then write it into `pack`.
 
+        Starts from the file in `pack` if it already exists there, e.g. from an
+        earlier patch or the project's own files, otherwise from vanilla.
         Nothing is written if the block raises.
 
             with target.patch(CARVER, "minecraft:canyon") as carver:
@@ -61,7 +63,8 @@ class Target:
         """
         if isinstance(file_type, Moved):
             file_type = file_type.for_version(self.version)
-        file = self._vanilla_copy(file_type, name)
+        existing = self.pack[file_type].get(name)
+        file = existing.copy() if existing else self._vanilla_copy(file_type, name)
         yield file.data
         self.pack[file_type][name] = file
 
