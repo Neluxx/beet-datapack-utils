@@ -6,7 +6,7 @@ from functools import cached_property, partial
 from typing import Any
 
 from beet import Context, DataPack, JsonFile
-from beet.contrib.vanilla import Vanilla
+from beet.contrib.vanilla import ReleaseRegistry, Vanilla
 from beet.contrib.worldgen import WorldgenDensityFunction
 
 from .file_types import Moved
@@ -72,8 +72,10 @@ class Target:
         return node
 
     def _vanilla_copy(self, file_type: type[JsonFile], name: str) -> JsonFile:
+        # Loaded outside the `try`, so a failed download isn't reported as a missing file.
+        vanilla = self._vanilla
         try:
-            return self._vanilla[file_type][name].copy()
+            return vanilla[file_type][name].copy()
         except KeyError:
             raise KeyError(
                 f"{name} ({file_type.__name__}) not found in vanilla {self.version}"
@@ -86,5 +88,12 @@ class Target:
 
 
 def _load_vanilla(ctx: Context, version: str) -> DataPack:
-    # beet caches the Vanilla service and its releases for the whole build.
-    return ctx.inject(Vanilla).releases[version].mount("data").data
+    releases = ctx.inject(Vanilla).releases
+    # `releases["1.19"]` matches release ids by prefix and returns 1.19.4, the
+    # newest match in the manifest. A registry with only the exact release can't.
+    entry = next((v for v in releases.manifest.data["versions"] if v["id"] == version), None)
+    if entry is None:
+        raise KeyError(f"Minecraft {version} not found in the version manifest")
+    manifest = JsonFile({"versions": [entry]})
+    exact = ReleaseRegistry(runtimes=releases.runtimes, cache=releases.cache, manifest=manifest)
+    return exact[version].mount("data").data

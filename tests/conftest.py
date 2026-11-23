@@ -1,4 +1,5 @@
 from types import SimpleNamespace
+from typing import ClassVar
 
 import pytest
 from beet import DataPack, run_beet
@@ -11,7 +12,6 @@ from beet.contrib.worldgen import (
 
 import beet_datapack_utils.target
 
-VANILLA_VERSIONS = ("1.21.9", "26.3")
 CANYON_OLD = {"type": "minecraft:canyon", "config": {"probability": 0.01}}
 CANYON_NEW = {"type": "minecraft:canyon", "probability": 0.01}
 FINAL_DENSITY = {"type": "minecraft:min", "left": "minecraft:a", "right": "minecraft:b"}
@@ -30,22 +30,38 @@ def vanilla_pack(version: str) -> DataPack:
     return pack
 
 
+# Newest first, like Mojang's manifest. "26.3.1" comes before "26.3" and
+# would be returned by beet's prefix lookup for "26.3".
+MANIFEST = {"versions": [{"id": "26.3.1"}, {"id": "26.3"}, {"id": "1.21.9"}]}
+
+
 class FakeRelease:
     def __init__(self, version: str):
         self.version = version
 
     def mount(self, _prefix: str) -> SimpleNamespace:
+        FakeVanilla.loaded.append(self.version)
         return SimpleNamespace(data=vanilla_pack(self.version))
+
+
+class FakeReleaseRegistry(dict):
+    """Stands in for beet's ReleaseRegistry, which downloads release info."""
+
+    def __init__(self, *, runtimes, cache, manifest):
+        super().__init__({v["id"]: FakeRelease(v["id"]) for v in manifest.data["versions"]})
 
 
 class FakeVanilla:
     """Stands in for beet's Vanilla service without downloading the game."""
 
     instances = 0
+    loaded: ClassVar[list[str]] = []
 
     def __init__(self, _ctx):
         FakeVanilla.instances += 1
-        self.releases = {version: FakeRelease(version) for version in VANILLA_VERSIONS}
+        self.releases = SimpleNamespace(
+            manifest=SimpleNamespace(data=MANIFEST), runtimes=None, cache=None
+        )
 
 
 @pytest.fixture
@@ -57,7 +73,9 @@ def load_vanilla():
 @pytest.fixture
 def fake_vanilla(monkeypatch):
     FakeVanilla.instances = 0
+    FakeVanilla.loaded = []
     monkeypatch.setattr(beet_datapack_utils.target, "Vanilla", FakeVanilla)
+    monkeypatch.setattr(beet_datapack_utils.target, "ReleaseRegistry", FakeReleaseRegistry)
     return FakeVanilla
 
 

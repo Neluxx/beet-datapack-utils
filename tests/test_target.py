@@ -41,6 +41,16 @@ def test_patch_writes_each_version_in_its_format(build):
     assert "minecraft:canyon" not in ctx.data[WorldgenCarver]
 
 
+def test_vanilla_is_the_exact_release(build, fake_vanilla):
+    build(disable_canyons)
+    assert sorted(fake_vanilla.loaded) == ["1.21.9", "26.3"]
+
+
+def test_unknown_vanilla_release(build):
+    with pytest.raises(KeyError, match="Minecraft 26 not found"):
+        build(disable_canyons, meta={"base_version": "26"})
+
+
 def test_vanilla_is_only_loaded_when_needed(build, fake_vanilla):
     build(lambda ctx: targets(ctx))
     assert fake_vanilla.instances == 0
@@ -76,6 +86,18 @@ def test_missing_file_has_helpful_error(load_vanilla):
     with (
         pytest.raises(KeyError, match="minecraft:missing"),
         target.patch(CARVER, "minecraft:missing"),
+    ):
+        pass
+
+
+def test_failed_vanilla_load_is_not_reported_as_missing_file():
+    def unknown_release(version: str) -> DataPack:
+        raise KeyError(f"unknown release {version}")
+
+    target = Target(DataPack(), "1.21.99", unknown_release)
+    with (
+        pytest.raises(KeyError, match=r"unknown release 1\.21\.99"),
+        target.patch(CARVER, "minecraft:canyon"),
     ):
         pass
 
