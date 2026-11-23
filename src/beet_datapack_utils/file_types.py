@@ -9,6 +9,7 @@ from beet.contrib.worldgen import (
     WorldgenConfiguredFeature,
     WorldgenFeature,
 )
+from beet.core.utils import split_version
 
 __all__ = ["CARVER", "FEATURE", "Moved"]
 
@@ -30,7 +31,7 @@ class Moved:
         >>> CARVER.for_version("26.3") is WorldgenCarver
         True
         """
-        return self.after if _parse_version(version) >= _parse_version(self.since) else self.before
+        return self.after if split_version(version) >= split_version(self.since) else self.before
 
 
 #: `worldgen/configured_carver` became `worldgen/carver` in 26.3.
@@ -38,10 +39,3 @@ CARVER = Moved(WorldgenConfiguredCarver, WorldgenCarver, since="26.3")
 
 #: `worldgen/configured_feature` became `worldgen/feature` in 26.3.
 FEATURE = Moved(WorldgenConfiguredFeature, WorldgenFeature, since="26.3")
-
-
-def _parse_version(version: str) -> tuple[int, ...]:
-    try:
-        return tuple(int(part) for part in version.split("."))
-    except ValueError:
-        raise ValueError(f"Invalid release version {version!r}, expected e.g. '1.21.9'") from None
