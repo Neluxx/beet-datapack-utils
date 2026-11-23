@@ -1,5 +1,10 @@
 # beet-datapack-utils
 
+[![CI](https://github.com/Neluxx/beet-datapack-utils/actions/workflows/ci.yml/badge.svg)](https://github.com/Neluxx/beet-datapack-utils/actions/workflows/ci.yml)
+[![PyPI](https://img.shields.io/pypi/v/beet-datapack-utils)](https://pypi.org/project/beet-datapack-utils/)
+[![Python](https://img.shields.io/pypi/pyversions/beet-datapack-utils)](https://pypi.org/project/beet-datapack-utils/)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue)](https://github.com/Neluxx/beet-datapack-utils/blob/main/LICENSE)
+
 A Python library with helpers for building multi-version Minecraft datapacks with [beet](https://github.com/mcbeet/beet).
 
 Minecraft changes the datapack format regularly: folders are renamed, fields move or disappear. To support several Minecraft versions from one build, you need a base pack plus one overlay per version, and each of them needs its own patched copy of every vanilla file you change.
@@ -73,7 +78,3 @@ This one plugin disables canyons in every version. Before 26.3 the file is `worl
 | [Usage](https://github.com/Neluxx/beet-datapack-utils/blob/main/docs/USAGE.md) | Configuring `beet.yml` and an overview of all helpers |
 | [Development](https://github.com/Neluxx/beet-datapack-utils/blob/main/docs/DEVELOPMENT.md) | Setup, tests, conventions and releasing |
 | [Changelog](https://github.com/Neluxx/beet-datapack-utils/blob/main/CHANGELOG.md) | Changes in each release |
-
-## License
-
-[MIT](https://github.com/Neluxx/beet-datapack-utils/blob/main/LICENSE)
