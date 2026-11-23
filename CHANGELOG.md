@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 ### Changed
+- **Breaking:** `targets(ctx)` raises `KeyError` if a directory in `meta.overlay_versions` is missing in `data_pack.overlays` instead of creating a new overlay
+- **Breaking:** `targets(ctx)` raises `TypeError` if a version isn't a string, e.g. an unquoted `1.20`
 
 ### Deprecated
 

@@ -32,9 +32,13 @@ def targets(ctx: Context) -> list[Target]:
         raise KeyError("Missing `meta.base_version` in the beet config")
 
     load_vanilla = partial(_load_vanilla, ctx)
-    result = [Target(ctx.data, str(meta["base_version"]), load_vanilla)]
+    # Copied first: `in ctx.data.overlays` would create the overlay.
+    configured = set(ctx.data.overlays)
+    result = [Target(ctx.data, _version(meta["base_version"]), load_vanilla)]
     for directory, version in meta.get("overlay_versions", {}).items():
-        result.append(Target(ctx.data.overlays[directory], str(version), load_vanilla))
+        if directory not in configured:
+            raise KeyError(f"Overlay {directory!r} is missing in `data_pack.overlays`")
+        result.append(Target(ctx.data.overlays[directory], _version(version), load_vanilla))
     return result
 
 
@@ -85,6 +89,13 @@ class Target:
     def _vanilla(self) -> DataPack:
         # Loaded on first use, so packs that never read vanilla build offline.
         return self._load_vanilla(self.version)
+
+
+def _version(value: Any) -> str:
+    # YAML reads an unquoted 1.20 as the float 1.2.
+    if not isinstance(value, str):
+        raise TypeError(f'Version {value!r} must be quoted in the beet config, e.g. "1.20"')
+    return value
 
 
 def _load_vanilla(ctx: Context, version: str) -> DataPack:

@@ -41,6 +41,19 @@ def test_patch_writes_each_version_in_its_format(build):
     assert "minecraft:canyon" not in ctx.data[WorldgenCarver]
 
 
+def test_unconfigured_overlay(build):
+    ctx = build(meta={"base_version": "1.21.9", "overlay_versions": {"v26_3_typo": "26.3"}})
+    with pytest.raises(KeyError, match="v26_3_typo"):
+        targets(ctx)
+    assert "v26_3_typo" not in set(ctx.data.overlays)
+
+
+def test_unquoted_version(build):
+    ctx = build(meta={"base_version": 1.2})
+    with pytest.raises(TypeError, match="must be quoted"):
+        targets(ctx)
+
+
 def test_vanilla_is_the_exact_release(build, fake_vanilla):
     build(disable_canyons)
     assert sorted(fake_vanilla.loaded) == ["1.21.9", "26.3"]

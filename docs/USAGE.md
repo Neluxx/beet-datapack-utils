@@ -28,9 +28,9 @@ data_pack:
 ```
 
 - **Base version:** use the oldest version you support. The base pack is built from that version's vanilla files, but every version in its format range that no overlay covers loads it.
-- **Overlays:** add one for each version that changed a file you patch. Each key in `overlay_versions` should match a `directory` in `data_pack.overlays`. If a directory isn't listed there, it gets beet's default pack format.
+- **Overlays:** add one for each version that changed a file you patch. Each key in `overlay_versions` must match a `directory` in `data_pack.overlays`, otherwise the build fails.
 - **Pack formats:** the library doesn't set them. Set them in `data_pack` as you normally would in beet. If you leave them out, beet uses the format of the newest Minecraft version it knows.
-- **Versions:** only release versions like `1.21.9` or `26.3` work. Snapshots and pre-releases (`25w45a`, `1.21.9-pre1`) don't.
+- **Versions:** only release versions like `1.21.9` or `26.3` work. Snapshots and pre-releases (`25w45a`, `1.21.9-pre1`) don't. Always quote them: YAML reads `1.20` as the number `1.2`. The exact release is loaded: `"1.19"` means 1.19, not 1.19.4.
 - **Pipeline:** `src.plugins.canyon` refers to `src/plugins/canyon.py` in your project. That file must contain a `beet_default(ctx)` function.
 
 ## Writing a plugin
@@ -57,7 +57,7 @@ Everything below can be imported directly from `beet_datapack_utils`.
 
 | Name | Description |
 | --- | --- |
-| `targets(ctx)` | Returns one `Target` for the base pack and one for each overlay. Raises `KeyError` if `meta.base_version` is missing. |
+| `targets(ctx)` | Returns one `Target` for the base pack and one for each overlay. Raises `KeyError` if `meta.base_version` is missing or an overlay directory isn't configured, `TypeError` if a version isn't quoted. |
 | `Target.pack` | The output pack of this target. Use it to add your own files, e.g. `target.pack[Function]["my:tick"] = Function([...])`. |
 | `Target.version` | The target's Minecraft version, e.g. `"26.3"` |
 | `Target.patch(file_type, name)` | Copies a vanilla file, yields its JSON for editing and writes it into `pack`. Nothing is written if the block raises an error. Raises `KeyError` if the file doesn't exist in the target's version. |
