@@ -6,7 +6,8 @@ from beet.contrib.worldgen import (
     WorldgenFeature,
 )
 
-from beet_datapack_utils import CARVER, FEATURE, Moved
+from beet_datapack_utils import CARVER, FEATURE
+from beet_datapack_utils.file_types import Moved
 
 
 @pytest.mark.parametrize(

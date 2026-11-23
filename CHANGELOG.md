@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Deprecated
 
 ### Removed
+- **Breaking:** `Moved` is no longer exported. Use `CARVER` and `FEATURE`
 
 ### Fixed
 - `Target.patch` starts from the file already in the pack, so several plugins can patch the same file

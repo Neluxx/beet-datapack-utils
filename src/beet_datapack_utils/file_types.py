@@ -11,7 +11,7 @@ from beet.contrib.worldgen import (
 )
 from beet.core.utils import split_version
 
-__all__ = ["CARVER", "FEATURE", "Moved"]
+__all__ = ["CARVER", "FEATURE"]
 
 
 @dataclass(frozen=True)

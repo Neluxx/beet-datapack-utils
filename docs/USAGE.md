@@ -71,7 +71,6 @@ Everything below can be imported directly from `beet_datapack_utils`.
 | --- | --- |
 | `CARVER` | `worldgen/configured_carver` before 26.3, `worldgen/carver` from 26.3 on |
 | `FEATURE` | `worldgen/configured_feature` before 26.3, `worldgen/feature` from 26.3 on |
-| `Moved(before, after, since)` | Defines your own moved file type, e.g. `Moved(OldType, NewType, since="27.1")` |
 
 ### Fields
 
