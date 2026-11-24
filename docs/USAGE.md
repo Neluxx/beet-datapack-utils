@@ -7,7 +7,7 @@ The library reads two keys from `meta`:
 | Key | Required | Description |
 | --- | --- | --- |
 | `base_version` | Yes | Minecraft version of the base pack |
-| `overlay_versions` | No | Mapping of overlay directory to Minecraft version |
+| `overlay_versions` | No | Overlay directory → Minecraft version |
 
 ```yaml
 pipeline:
@@ -27,66 +27,99 @@ data_pack:
       max_format: 121
 ```
 
-- **Base version:** use the oldest version you support. The base pack is built from that version's vanilla files, but every version in its format range that no overlay covers loads it.
-- **Overlays:** add one for each version that changed a file you patch. Each key in `overlay_versions` must match a `directory` in `data_pack.overlays`, otherwise the build fails.
-- **Pack formats:** the library doesn't set them. Set them in `data_pack` as you normally would in beet. If you leave them out, beet uses the format of the newest Minecraft version it knows.
-- **Versions:** only release versions like `1.21.9` or `26.3` work. Snapshots and pre-releases (`25w45a`, `1.21.9-pre1`) don't. Always quote them: YAML reads `1.20` as the number `1.2`. The exact release is loaded: `"1.19"` means 1.19, not 1.19.4.
-- **Pipeline:** `src.plugins.canyon` refers to `src/plugins/canyon.py` in your project. That file must contain a `beet_default(ctx)` function.
+- **Base version:** use the oldest version you support. Every version that no overlay covers uses the base pack.
+- **Overlays:** add one for each version that changed a file you edit. Each key in `overlay_versions` must also be a `directory` in `data_pack.overlays`, otherwise the build fails.
+- **Pack formats:** set them in `data_pack` as usual. The library doesn't touch them.
+- **Versions:** only releases like `"1.21.9"` or `"26.3"`, no snapshots or pre-releases. Always quote them, because YAML reads `1.20` as the number `1.2`. `"1.19"` means exactly 1.19, not 1.19.4.
+- **Pipeline:** `src.plugins.canyon` is the file `src/plugins/canyon.py`, which must contain a `beet_default(ctx)` function.
 
 ## Writing a plugin
 
-Loop over `targets(ctx)`. You get one `Target` for the base pack and one for each overlay. `target.patch` copies the vanilla file of the target's version, lets you edit its JSON and writes it into the target's pack:
+Loop over `versioned_packs(ctx)` and edit files with `pack.edit`:
 
 ```python
 from beet import Context
 
-from beet_datapack_utils import CARVER, targets, worldgen_config
+from beet_datapack_utils import CARVER, get_config, versioned_packs
 
 
 def beet_default(ctx: Context):
-    for target in targets(ctx):
-        with target.patch(CARVER, "minecraft:canyon") as carver:
-            worldgen_config(carver)["probability"] = 0
+    for pack in versioned_packs(ctx):
+        with pack.edit(CARVER, "minecraft:canyon") as canyon:
+            get_config(canyon)["probability"] = 0
 ```
 
-## Helpers
+The loop runs once for the base pack and once per overlay. Inside the `with` block, `canyon` is the JSON of the file as a `dict`. When the block ends, the file is written into the pack.
 
-Everything below can be imported directly from `beet_datapack_utils`.
+## API
 
-### Targets
+Everything is imported from `beet_datapack_utils`.
+
+### Packs
 
 | Name | Description |
 | --- | --- |
-| `targets(ctx)` | Returns one `Target` for the base pack and one for each overlay. Raises `KeyError` if `meta.base_version` is missing or an overlay directory isn't configured, `TypeError` if a version isn't quoted. |
-| `Target.pack` | The output pack of this target. Use it to add your own files, e.g. `target.pack[Function]["my:tick"] = Function([...])`. |
-| `Target.version` | The target's Minecraft version, e.g. `"26.3"` |
-| `Target.patch(file_type, name)` | Copies the file, yields its JSON for editing and writes it into `pack`. Starts from the file in `pack` if it exists (e.g. patched by another plugin or from your own `src/datapack`), otherwise from vanilla. Nothing is written if the block raises an error. Raises `KeyError` if the file doesn't exist in the target's version. |
+| `versioned_packs(ctx)` | Returns a `VersionedPack` for the base pack and one for each overlay. |
+| `VersionedPack.data_pack` | The beet `DataPack` to write into, e.g. `pack.data_pack[Function]["my:tick"] = Function([...])`. |
+| `VersionedPack.minecraft_version` | The Minecraft version, e.g. `"26.3"`. |
+| `VersionedPack.edit(file_type, name)` | Yields the JSON of a file for editing and writes it into `data_pack`. Starts from the file in `data_pack` if it is already there (your own files or an earlier edit), otherwise from vanilla. Nothing is written if the block raises an error. |
+
+Vanilla is only downloaded when `edit` needs it.
 
 ### File types
 
-`file_type` can be any beet file type, e.g. `WorldgenNoise` or `WorldgenNoiseSettings`. For files whose folder moved between versions, use one of these:
+`edit` takes any beet file type, e.g. `WorldgenNoise`. For files whose folder moved, use:
 
-| Name | Description |
-| --- | --- |
-| `CARVER` | `worldgen/configured_carver` before 26.3, `worldgen/carver` from 26.3 on |
-| `FEATURE` | `worldgen/configured_feature` before 26.3, `worldgen/feature` from 26.3 on |
+| Name | Before 26.3 | From 26.3 on |
+| --- | --- | --- |
+| `CARVER` | `worldgen/configured_carver` | `worldgen/carver` |
+| `FEATURE` | `worldgen/configured_feature` | `worldgen/feature` |
 
 ### Fields
 
 | Name | Description |
 | --- | --- |
-| `worldgen_config(data)` | Returns the settings object of a carver or feature (the `config` wrapper was removed in 26.3) |
-| `set_range(config, name, minimum, maximum)` | Sets the bounds of the uniform provider `config[name]`. Handles the `value` wrapper used before 1.20.5 and both `max_exclusive` and `max_inclusive`. Raises `ValueError` if the field isn't a range. |
-| `resolve_key(data, *candidates)` | Returns the first key that exists, for renamed fields, e.g. `resolve_key(noise, "base_octave", "firstOctave")`. Raises `KeyError` if none of them exist. |
+| `get_config(data)` | Returns the settings of a carver or feature: `data["config"]` before 26.3, `data` itself from 26.3 on. |
+| `set_range(config, name, minimum, maximum)` | Sets the bounds of the uniform range `config[name]`. Works for int and float ranges and the format before 1.20.5. |
+| `first_existing_key(data, *keys)` | Returns the first of `keys` that exists in `data`. Use it for renamed fields. |
+
+### Errors
+
+| Error | When |
+| --- | --- |
+| `KeyError` | `meta.base_version` is missing, an overlay directory isn't in `data_pack.overlays`, a version isn't a known release, a file doesn't exist in that version, or `first_existing_key` finds none of the keys. |
+| `TypeError` | A version in `beet.yml` isn't quoted. |
+| `ValueError` | `set_range` is used on a field that isn't a uniform range. |
 
 ## Examples
 
-Change a range and a renamed field:
+Change ranges and a renamed field of a carver:
 
 ```python
-with target.patch(CARVER, "minecraft:cave") as cave:
-    config = worldgen_config(cave)
-    set_range(config, "horizontal_radius_multiplier", 0.8, 1.5)
-    room = resolve_key(config, "room_vertical_radius_multiplier", "yScale")
-    set_range(config, room, 0.1, 0.9)
+for pack in versioned_packs(ctx):
+    with pack.edit(CARVER, "minecraft:cave") as cave:
+        config = get_config(cave)
+        set_range(config, "horizontal_radius_multiplier", 0.8, 1.5)
+        room = first_existing_key(config, "room_vertical_radius_multiplier", "yScale")
+        set_range(config, room, 0.1, 0.9)
+```
+
+Edit a file type whose folder didn't move:
+
+```python
+from beet.contrib.worldgen import WorldgenNoise
+
+for pack in versioned_packs(ctx):
+    with pack.edit(WorldgenNoise, "minecraft:temperature") as noise:
+        noise[first_existing_key(noise, "base_octave", "firstOctave")] = -9
+```
+
+Add your own files to every pack:
+
+```python
+from beet import Function, FunctionTag
+
+for pack in versioned_packs(ctx):
+    pack.data_pack[Function]["my_pack:tick"] = Function(["gamemode survival @a"])
+    pack.data_pack["minecraft:tick"] = FunctionTag({"values": ["my_pack:tick"]})
 ```

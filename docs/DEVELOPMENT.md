@@ -23,7 +23,7 @@ uv run ruff check      # linting
 uv run ruff format     # formatting
 ```
 
-The tests never download Minecraft. `Target` receives a function that loads the vanilla pack, so most tests pass an in-memory fake directly. Tests that run a whole beet build replace beet's `Vanilla` service instead (see `tests/conftest.py`).
+The tests never download Minecraft. `VersionedPack` receives a function that loads the vanilla pack, so most tests pass an in-memory fake directly. Tests that run a whole beet build replace beet's `Vanilla` service instead (see `tests/conftest.py`).
 
 CI runs `ruff format --check`, `ruff check`, `pytest` and `uv build` on every pull request and on every push to `main`.
 
@@ -45,15 +45,15 @@ Then run `uv sync` and `uv run beet build` in the datapack. Remove the entry aga
 ├── docs/                  # Documentation
 ├── src/beet_datapack_utils/
 │   ├── __init__.py        # Public API
-│   ├── target.py          # targets() and Target
-│   ├── file_types.py      # CARVER, FEATURE, Moved
+│   ├── packs.py           # versioned_packs() and VersionedPack
+│   ├── file_types.py      # CARVER and FEATURE
 │   └── fields.py          # Fields that changed between versions
 ├── tests/                 # One test_<module>.py per module
 ├── CHANGELOG.md
 └── pyproject.toml
 ```
 
-When you add a public helper, export it in `__init__.py` (including `__all__`) and add it to the helper tables in [USAGE.md](USAGE.md). Only add helpers that a real datapack needs.
+When you add a public helper, export it in `__init__.py` (including `__all__`) and add it to the API tables in [USAGE.md](USAGE.md). Only add helpers that a real datapack needs.
 
 ## Conventions
 

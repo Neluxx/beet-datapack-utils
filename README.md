@@ -9,13 +9,13 @@ A Python library with helpers for building multi-version Minecraft datapacks wit
 
 Minecraft changes the datapack format regularly: folders are renamed, fields move or disappear. To support several Minecraft versions from one build, you need a base pack plus one overlay per version, and each of them needs its own patched copy of every vanilla file you change.
 
-This library does that work for you. For the base pack and every overlay, it copies the matching vanilla file, smooths over the format differences and writes the patched file back. Your plugin only describes *what* to change.
+This library does that work for you. You write one plugin that describes *what* to change, and it is applied to the base pack and every overlay with the vanilla files of their Minecraft version.
 
 ## Features
 
-- **One plugin for all versions:** loop over the base pack and all overlays with `targets(ctx)`.
-- **Vanilla patching:** copy, edit and write a vanilla file in a single `with` block. Vanilla is only downloaded when needed.
-- **Version differences:** helpers for moved folders and renamed or restructured fields.
+- **One plugin for all versions:** `versioned_packs(ctx)` returns the base pack and every overlay with its Minecraft version.
+- **Edit vanilla files:** `pack.edit(...)` loads a file in a `with` block and writes it back. Vanilla is only downloaded when needed.
+- **Version differences:** `CARVER`, `FEATURE`, `get_config`, `set_range` and `first_existing_key` hide moved folders and renamed or restructured fields.
 
 ## Quick start
 
@@ -52,13 +52,13 @@ data_pack:
 ```python
 from beet import Context
 
-from beet_datapack_utils import CARVER, targets, worldgen_config
+from beet_datapack_utils import CARVER, get_config, versioned_packs
 
 
 def beet_default(ctx: Context):
-    for target in targets(ctx):
-        with target.patch(CARVER, "minecraft:canyon") as carver:
-            worldgen_config(carver)["probability"] = 0
+    for pack in versioned_packs(ctx):
+        with pack.edit(CARVER, "minecraft:canyon") as canyon:
+            get_config(canyon)["probability"] = 0
 ```
 
 **4. Build** the datapack:
@@ -74,6 +74,6 @@ This one plugin disables canyons in every version. Before 26.3 the file is `worl
 | Guide | Contents |
 | --- | --- |
 | [Installation](https://github.com/Neluxx/beet-datapack-utils/blob/main/docs/INSTALLATION.md) | Requirements, installing, building and updating |
-| [Usage](https://github.com/Neluxx/beet-datapack-utils/blob/main/docs/USAGE.md) | Configuring `beet.yml` and an overview of all helpers |
+| [Usage](https://github.com/Neluxx/beet-datapack-utils/blob/main/docs/USAGE.md) | Configuring `beet.yml`, the API and examples |
 | [Development](https://github.com/Neluxx/beet-datapack-utils/blob/main/docs/DEVELOPMENT.md) | Setup, tests, conventions and releasing |
 | [Changelog](https://github.com/Neluxx/beet-datapack-utils/blob/main/CHANGELOG.md) | Changes in each release |
