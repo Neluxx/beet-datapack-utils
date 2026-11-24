@@ -5,7 +5,7 @@ from typing import Any
 __all__ = ["first_existing_key", "get_config", "set_range"]
 
 
-def get_config(data: dict) -> dict:
+def get_config(data: dict[str, Any]) -> dict[str, Any]:
     """Return the settings of a carver or feature.
 
     Before 26.3 they are wrapped in a `config` object, from 26.3 on they sit
@@ -19,7 +19,7 @@ def get_config(data: dict) -> dict:
     return data.get("config", data)
 
 
-def first_existing_key(data: dict, *keys: str) -> str:
+def first_existing_key(data: dict[str, Any], *keys: str) -> str:
     """Return the first of `keys` that exists in `data`, for renamed fields.
 
     >>> first_existing_key({"firstOctave": -9}, "base_octave", "firstOctave")
@@ -31,7 +31,7 @@ def first_existing_key(data: dict, *keys: str) -> str:
     raise KeyError(f"None of {list(keys)} found in {sorted(data)}")
 
 
-def set_range(config: dict, name: str, minimum: Any, maximum: Any) -> None:
+def set_range(config: dict[str, Any], name: str, minimum: float, maximum: float) -> None:
     """Set the bounds of the uniform range `config[name]`.
 
     Works with int ranges (`max_inclusive`), float ranges (`max_exclusive`)

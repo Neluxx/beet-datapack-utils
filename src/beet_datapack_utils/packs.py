@@ -45,7 +45,7 @@ class VersionedPack:
         data_pack: DataPack,
         minecraft_version: str,
         load_vanilla: Callable[[str], DataPack],
-    ):
+    ) -> None:
         self.data_pack = data_pack
         self.minecraft_version = minecraft_version
         self._load_vanilla = load_vanilla
