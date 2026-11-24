@@ -52,6 +52,13 @@ def test_unquoted_version(build):
         versioned_packs(ctx)
 
 
+@pytest.mark.parametrize("version", ["26.3-pre1", "25w14a"])
+def test_version_that_is_not_a_release(build, version):
+    ctx = build(meta={"base_version": version})
+    with pytest.raises(ValueError, match="not a release"):
+        versioned_packs(ctx)
+
+
 def test_edit_writes_each_version_in_its_format(build):
     ctx = build(disable_canyons)
 

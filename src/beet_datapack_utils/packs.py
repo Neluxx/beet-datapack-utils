@@ -1,5 +1,6 @@
 """The base pack and its overlays, each with its Minecraft version."""
 
+import re
 from collections.abc import Callable, Iterator
 from contextlib import contextmanager
 from functools import cached_property
@@ -11,6 +12,9 @@ from beet.contrib.vanilla import ReleaseRegistry, Vanilla
 from .file_types import MovedFileType
 
 __all__ = ["VersionedPack", "versioned_packs"]
+
+# Releases like "1.21.9" or "26.3". Snapshots and pre-releases are not supported.
+RELEASE_VERSION = re.compile(r"\d+(\.\d+)*")
 
 
 def versioned_packs(ctx: Context) -> list[VersionedPack]:
@@ -84,6 +88,8 @@ def _check_version(version: Any) -> str:
     # YAML reads an unquoted 1.20 as the float 1.2.
     if not isinstance(version, str):
         raise TypeError(f'Version {version!r} must be quoted in the beet config, e.g. "1.20"')
+    if not RELEASE_VERSION.fullmatch(version):
+        raise ValueError(f'Version {version!r} is not a release, e.g. "1.21.9" or "26.3"')
     return version
 
 

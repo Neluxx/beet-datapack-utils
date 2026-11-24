@@ -24,6 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Breaking:** `versioned_packs(ctx)` raises `ValueError` if a directory in `meta.overlay_versions` is missing in `data_pack.overlays` instead of creating a new overlay
 - **Breaking:** `versioned_packs(ctx)` raises `ValueError` instead of `KeyError` if `meta.base_version` is missing
 - **Breaking:** `versioned_packs(ctx)` raises `TypeError` if a version isn't a string, e.g. an unquoted `1.20`
+- **Breaking:** `versioned_packs(ctx)` raises `ValueError` if a version isn't a release, e.g. a snapshot or pre-release
 
 ### Deprecated
 
