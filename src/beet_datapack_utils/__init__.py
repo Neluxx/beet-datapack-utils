@@ -1,21 +1,19 @@
-"""Helpers for building multi-version Minecraft datapacks with beet.
+"""Helpers for building Minecraft datapacks for several versions with beet.
 
-A build has a base pack and overlays, each for one Minecraft version
-(`meta.base_version` and `meta.overlay_versions` in the beet config).
-`targets(ctx)` returns one `Target` per pack; `Target.patch` copies a vanilla
-file of that version, lets you edit it and writes it back.
+`versioned_packs(ctx)` returns the base pack and every overlay, each with its
+Minecraft version. `VersionedPack.edit` edits a file of that version.
 """
 
-from .fields import resolve_key, set_range, worldgen_config
+from .fields import first_existing_key, get_config, set_range
 from .file_types import CARVER, FEATURE
-from .target import Target, targets
+from .packs import VersionedPack, versioned_packs
 
 __all__ = [
     "CARVER",
     "FEATURE",
-    "Target",
-    "resolve_key",
+    "VersionedPack",
+    "first_existing_key",
+    "get_config",
     "set_range",
-    "targets",
-    "worldgen_config",
+    "versioned_packs",
 ]

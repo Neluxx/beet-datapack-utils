@@ -6,15 +6,13 @@ from beet import DataPack, run_beet
 from beet.contrib.worldgen import (
     WorldgenCarver,
     WorldgenConfiguredCarver,
-    WorldgenDensityFunction,
     worldgen,
 )
 
-import beet_datapack_utils.target
+import beet_datapack_utils.packs
 
 CANYON_OLD = {"type": "minecraft:canyon", "config": {"probability": 0.01}}
 CANYON_NEW = {"type": "minecraft:canyon", "probability": 0.01}
-FINAL_DENSITY = {"type": "minecraft:min", "left": "minecraft:a", "right": "minecraft:b"}
 
 
 def vanilla_pack(version: str) -> DataPack:
@@ -22,9 +20,6 @@ def vanilla_pack(version: str) -> DataPack:
     worldgen(pack)
     if version == "26.3":
         pack[WorldgenCarver]["minecraft:canyon"] = WorldgenCarver(CANYON_NEW)
-        pack[WorldgenDensityFunction]["minecraft:overworld/final_density"] = (
-            WorldgenDensityFunction(FINAL_DENSITY)
-        )
     else:
         pack[WorldgenConfiguredCarver]["minecraft:canyon"] = WorldgenConfiguredCarver(CANYON_OLD)
     return pack
@@ -66,7 +61,7 @@ class FakeVanilla:
 
 @pytest.fixture
 def load_vanilla():
-    """A vanilla loader for creating a `Target` directly."""
+    """A vanilla loader for creating a `VersionedPack` directly."""
     return vanilla_pack
 
 
@@ -74,8 +69,8 @@ def load_vanilla():
 def fake_vanilla(monkeypatch):
     FakeVanilla.instances = 0
     FakeVanilla.loaded = []
-    monkeypatch.setattr(beet_datapack_utils.target, "Vanilla", FakeVanilla)
-    monkeypatch.setattr(beet_datapack_utils.target, "ReleaseRegistry", FakeReleaseRegistry)
+    monkeypatch.setattr(beet_datapack_utils.packs, "Vanilla", FakeVanilla)
+    monkeypatch.setattr(beet_datapack_utils.packs, "ReleaseRegistry", FakeReleaseRegistry)
     return FakeVanilla
 
 

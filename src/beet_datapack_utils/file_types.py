@@ -15,27 +15,24 @@ __all__ = ["CARVER", "FEATURE"]
 
 
 @dataclass(frozen=True)
-class Moved:
-    """A file type that moved from `before` to `after` in version `since`.
+class MovedFileType:
+    """A file type that is `old` before version `since` and `new` from then on."""
 
-    Pass it to `Target.patch` like a normal beet file type.
-    """
-
-    before: type[JsonFile]
-    after: type[JsonFile]
+    old: type[JsonFile]
+    new: type[JsonFile]
     since: str
 
     def for_version(self, version: str) -> type[JsonFile]:
-        """Return the file type used by `version`.
+        """Return the file type that `version` uses.
 
         >>> CARVER.for_version("26.3") is WorldgenCarver
         True
         """
-        return self.after if split_version(version) >= split_version(self.since) else self.before
+        return self.new if split_version(version) >= split_version(self.since) else self.old
 
 
-#: `worldgen/configured_carver` became `worldgen/carver` in 26.3.
-CARVER = Moved(WorldgenConfiguredCarver, WorldgenCarver, since="26.3")
+#: `worldgen/configured_carver` before 26.3, `worldgen/carver` from 26.3 on.
+CARVER = MovedFileType(WorldgenConfiguredCarver, WorldgenCarver, since="26.3")
 
-#: `worldgen/configured_feature` became `worldgen/feature` in 26.3.
-FEATURE = Moved(WorldgenConfiguredFeature, WorldgenFeature, since="26.3")
+#: `worldgen/configured_feature` before 26.3, `worldgen/feature` from 26.3 on.
+FEATURE = MovedFileType(WorldgenConfiguredFeature, WorldgenFeature, since="26.3")

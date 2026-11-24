@@ -10,8 +10,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 ### Changed
-- **Breaking:** `targets(ctx)` raises `KeyError` if a directory in `meta.overlay_versions` is missing in `data_pack.overlays` instead of creating a new overlay
-- **Breaking:** `targets(ctx)` raises `TypeError` if a version isn't a string, e.g. an unquoted `1.20`
+- **Breaking:** Renamed the public API so the names say what they do:
+
+  | Old | New |
+  | --- | --- |
+  | `targets(ctx)` | `versioned_packs(ctx)` |
+  | `Target` | `VersionedPack` |
+  | `Target.pack` | `VersionedPack.data_pack` |
+  | `Target.version` | `VersionedPack.minecraft_version` |
+  | `Target.patch(file_type, name)` | `VersionedPack.edit(file_type, name)` |
+  | `worldgen_config(data)` | `get_config(data)` |
+  | `resolve_key(data, *candidates)` | `first_existing_key(data, *keys)` |
+- **Breaking:** `versioned_packs(ctx)` raises `KeyError` if a directory in `meta.overlay_versions` is missing in `data_pack.overlays` instead of creating a new overlay
+- **Breaking:** `versioned_packs(ctx)` raises `TypeError` if a version isn't a string, e.g. an unquoted `1.20`
 
 ### Deprecated
 
@@ -20,10 +31,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Breaking:** `is_reference`, `replace_nodes` and `Target.inline_density_function` are removed
 
 ### Fixed
-- `Target.patch` starts from the file already in the pack, so several plugins can patch the same file
+- `VersionedPack.edit` starts from the file already in the pack, so several plugins can edit the same file
 - Load the exact vanilla release. beet looks up releases by prefix, so `"1.19"` loaded 1.19.4
 - A vanilla version that can't be loaded is no longer reported as a missing file
-- `targets(ctx)` accepts an empty `meta.overlay_versions`
+- `versioned_packs(ctx)` accepts an empty `meta.overlay_versions`
 
 ### Security
 
