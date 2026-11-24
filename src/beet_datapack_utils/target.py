@@ -34,7 +34,7 @@ def targets(ctx: Context) -> list[Target]:
     # Copied first: `in ctx.data.overlays` would create the overlay.
     configured = set(ctx.data.overlays)
     result = [Target(ctx.data, _version(meta["base_version"]), load_vanilla)]
-    for directory, version in meta.get("overlay_versions", {}).items():
+    for directory, version in (meta.get("overlay_versions") or {}).items():
         if directory not in configured:
             raise KeyError(f"Overlay {directory!r} is missing in `data_pack.overlays`")
         result.append(Target(ctx.data.overlays[directory], _version(version), load_vanilla))

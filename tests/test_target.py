@@ -41,6 +41,12 @@ def test_patch_writes_each_version_in_its_format(build):
     assert "minecraft:canyon" not in ctx.data[WorldgenCarver]
 
 
+def test_empty_overlay_versions(build):
+    # An `overlay_versions:` key without entries is read as None.
+    ctx = build(meta={"base_version": "1.21.9", "overlay_versions": None})
+    assert [target.version for target in targets(ctx)] == ["1.21.9"]
+
+
 def test_unconfigured_overlay(build):
     ctx = build(meta={"base_version": "1.21.9", "overlay_versions": {"v26_3_typo": "26.3"}})
     with pytest.raises(KeyError, match="v26_3_typo"):
