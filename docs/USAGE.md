@@ -61,7 +61,6 @@ Everything below can be imported directly from `beet_datapack_utils`.
 | `Target.pack` | The output pack of this target. Use it to add your own files, e.g. `target.pack[Function]["my:tick"] = Function([...])`. |
 | `Target.version` | The target's Minecraft version, e.g. `"26.3"` |
 | `Target.patch(file_type, name)` | Copies the file, yields its JSON for editing and writes it into `pack`. Starts from the file in `pack` if it exists (e.g. patched by another plugin or from your own `src/datapack`), otherwise from vanilla. Nothing is written if the block raises an error. Raises `KeyError` if the file doesn't exist in the target's version. |
-| `Target.inline_density_function(node)` | If `node` is an ID, returns a copy of that vanilla density function. Otherwise returns `node` unchanged. |
 
 ### File types
 
@@ -80,13 +79,6 @@ Everything below can be imported directly from `beet_datapack_utils`.
 | `set_range(config, name, minimum, maximum)` | Sets the bounds of the uniform provider `config[name]`. Handles the `value` wrapper used before 1.20.5 and both `max_exclusive` and `max_inclusive`. Raises `ValueError` if the field isn't a range. |
 | `resolve_key(data, *candidates)` | Returns the first key that exists, for renamed fields, e.g. `resolve_key(noise, "base_octave", "firstOctave")`. Raises `KeyError` if none of them exist. |
 
-### Density functions
-
-| Name | Description |
-| --- | --- |
-| `is_reference(node, function_id)` | `True` if `node` references `function_id`, directly or through cache/interpolation wrappers |
-| `replace_nodes(tree, match, replacement, count=n)` | Replaces every node below `tree` for which `match(node)` is `True`. Exactly `count` nodes must match, otherwise it raises `ValueError` and changes nothing, so your build fails when vanilla changes. Nodes inside a match are not searched. |
-
 ## Examples
 
 Change a range and a renamed field:
@@ -97,15 +89,4 @@ with target.patch(CARVER, "minecraft:cave") as cave:
     set_range(config, "horizontal_radius_multiplier", 0.8, 1.5)
     room = resolve_key(config, "room_vertical_radius_multiplier", "yScale")
     set_range(config, room, 0.1, 0.9)
-```
-
-Replace a node in a density function:
-
-```python
-NOODLE = "minecraft:overworld/caves/noodle"
-
-with target.patch(WorldgenNoiseSettings, "minecraft:overworld") as settings:
-    router = settings["noise_router"]
-    router["final_density"] = target.inline_density_function(router["final_density"])
-    replace_nodes(router["final_density"], lambda node: node == NOODLE, 1, count=1)
 ```

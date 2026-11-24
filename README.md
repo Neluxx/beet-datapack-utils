@@ -16,7 +16,6 @@ This library does that work for you. For the base pack and every overlay, it cop
 - **One plugin for all versions:** loop over the base pack and all overlays with `targets(ctx)`.
 - **Vanilla patching:** copy, edit and write a vanilla file in a single `with` block. Vanilla is only downloaded when needed.
 - **Version differences:** helpers for moved folders and renamed or restructured fields.
-- **Safe density function edits:** search and replace nodes in JSON trees, and fail the build if the vanilla structure has changed.
 
 ## Quick start
 

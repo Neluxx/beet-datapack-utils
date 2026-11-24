@@ -7,7 +7,6 @@ from typing import Any
 
 from beet import Context, DataPack, JsonFile
 from beet.contrib.vanilla import ReleaseRegistry, Vanilla
-from beet.contrib.worldgen import WorldgenDensityFunction
 
 from .file_types import Moved
 
@@ -67,16 +66,6 @@ class Target:
         file = existing.copy() if existing else self._vanilla_copy(file_type, name)
         yield file.data
         self.pack[file_type][name] = file
-
-    def inline_density_function(self, node: Any) -> Any:
-        """Return a copy of the vanilla density function if `node` is an id, else `node`.
-
-        26.3 moved most noise router functions into separate files. Inlining
-        keeps a patch local to one noise settings file.
-        """
-        if isinstance(node, str):
-            return self._vanilla_copy(WorldgenDensityFunction, node).data
-        return node
 
     def _vanilla_copy(self, file_type: type[JsonFile], name: str) -> JsonFile:
         # Loaded outside the `try`, so a failed download isn't reported as a missing file.

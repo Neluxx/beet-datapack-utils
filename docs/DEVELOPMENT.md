@@ -47,8 +47,7 @@ Then run `uv sync` and `uv run beet build` in the datapack. Remove the entry aga
 │   ├── __init__.py        # Public API
 │   ├── target.py          # targets() and Target
 │   ├── file_types.py      # CARVER, FEATURE, Moved
-│   ├── fields.py          # Fields that changed between versions
-│   └── density.py         # Density function helpers
+│   └── fields.py          # Fields that changed between versions
 ├── tests/                 # One test_<module>.py per module
 ├── CHANGELOG.md
 └── pyproject.toml

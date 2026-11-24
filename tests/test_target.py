@@ -1,6 +1,6 @@
 import pytest
 from beet import Context, DataPack
-from beet.contrib.worldgen import WorldgenCarver, WorldgenConfiguredCarver
+from beet.contrib.worldgen import WorldgenCarver, WorldgenConfiguredCarver, WorldgenDensityFunction
 
 from beet_datapack_utils import CARVER, Target, targets, worldgen_config
 
@@ -139,15 +139,6 @@ def test_failed_vanilla_load_is_not_reported_as_missing_file():
         pass
 
 
-def test_inline_density_function(load_vanilla):
-    target = Target(DataPack(), "26.3", load_vanilla)
-    inlined = target.inline_density_function(FINAL_DENSITY)
-    assert inlined["type"] == "minecraft:min"
-    inlined["left"] = 1  # a copy, vanilla stays untouched
-    assert target.inline_density_function(FINAL_DENSITY)["left"] == "minecraft:a"
-    assert target.inline_density_function({"type": "minecraft:add"}) == {"type": "minecraft:add"}
-
-
 def test_vanilla_is_loaded_once_per_target(load_vanilla):
     loaded = []
 
@@ -157,6 +148,8 @@ def test_vanilla_is_loaded_once_per_target(load_vanilla):
 
     target = Target(DataPack(), "26.3", counting_loader)
     assert loaded == []
-    target.inline_density_function(FINAL_DENSITY)
-    target.inline_density_function(FINAL_DENSITY)
+    with target.patch(CARVER, "minecraft:canyon"):
+        pass
+    with target.patch(WorldgenDensityFunction, FINAL_DENSITY):
+        pass
     assert loaded == ["26.3"]

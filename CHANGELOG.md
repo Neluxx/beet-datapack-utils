@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 - **Breaking:** `Moved` is no longer exported. Use `CARVER` and `FEATURE`
+- **Breaking:** `is_reference`, `replace_nodes` and `Target.inline_density_function` are removed
 
 ### Fixed
 - `Target.patch` starts from the file already in the pack, so several plugins can patch the same file
