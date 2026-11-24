@@ -87,9 +87,9 @@ Vanilla is only downloaded when `edit` needs it.
 
 | Error | When |
 | --- | --- |
-| `KeyError` | `meta.base_version` is missing, an overlay directory isn't in `data_pack.overlays`, a version isn't a known release, a file doesn't exist in that version, or `first_existing_key` finds none of the keys. |
+| `KeyError` | A version isn't a known release, a file doesn't exist in that version, or `first_existing_key` finds none of the keys. |
 | `TypeError` | A version in `beet.yml` isn't quoted. |
-| `ValueError` | `set_range` is used on a field that isn't a uniform range. |
+| `ValueError` | `meta.base_version` is missing, an overlay directory isn't in `data_pack.overlays`, or `set_range` is used on a field that isn't a uniform range. |
 
 ## Examples
 

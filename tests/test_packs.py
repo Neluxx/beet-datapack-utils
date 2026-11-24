@@ -29,7 +29,7 @@ def test_versioned_packs(build):
 
 def test_missing_base_version(build):
     ctx = build(meta={"overlay_versions": {}})
-    with pytest.raises(KeyError, match="base_version"):
+    with pytest.raises(ValueError, match="base_version"):
         versioned_packs(ctx)
 
 
@@ -41,7 +41,7 @@ def test_empty_overlay_versions(build):
 
 def test_unconfigured_overlay(build):
     ctx = build(meta={"base_version": "1.21.9", "overlay_versions": {"v26_3_typo": "26.3"}})
-    with pytest.raises(KeyError, match="v26_3_typo"):
+    with pytest.raises(ValueError, match="v26_3_typo"):
         versioned_packs(ctx)
     assert "v26_3_typo" not in set(ctx.data.overlays)
 

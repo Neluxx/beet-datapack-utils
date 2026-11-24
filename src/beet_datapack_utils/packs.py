@@ -21,7 +21,7 @@ def versioned_packs(ctx: Context) -> list[VersionedPack]:
     """
     meta = ctx.meta
     if "base_version" not in meta:
-        raise KeyError("Missing `meta.base_version` in the beet config")
+        raise ValueError("Missing `meta.base_version` in the beet config")
 
     def load_vanilla(version: str) -> DataPack:
         return _load_vanilla(ctx, version)
@@ -31,7 +31,7 @@ def versioned_packs(ctx: Context) -> list[VersionedPack]:
     packs = [VersionedPack(ctx.data, _check_version(meta["base_version"]), load_vanilla)]
     for directory, version in (meta.get("overlay_versions") or {}).items():
         if directory not in configured_overlays:
-            raise KeyError(f"Overlay {directory!r} is missing in `data_pack.overlays`")
+            raise ValueError(f"Overlay {directory!r} is missing in `data_pack.overlays`")
         overlay = ctx.data.overlays[directory]
         packs.append(VersionedPack(overlay, _check_version(version), load_vanilla))
     return packs
