@@ -26,7 +26,7 @@ You can also add the package to your `pyproject.toml` yourself and then run `uv 
 [project]
 dependencies = [
     "beet>=0.121.2",
-    "beet-datapack-utils>=0.1.0",
+    "beet-datapack-utils>=0.3.0",
 ]
 ```
 
