@@ -3,7 +3,7 @@
 ## Requirements
 
 - [Python](https://www.python.org/) 3.14 or newer
-- [beet](https://github.com/mcbeet/beet) 0.119.0 or newer (installed automatically as a dependency)
+- [beet](https://github.com/mcbeet/beet) 0.121.2 or newer (installed automatically as a dependency)
 - A package manager. [uv](https://docs.astral.sh/uv/) is recommended.
 
 ## Install
@@ -25,7 +25,7 @@ You can also add the package to your `pyproject.toml` yourself and then run `uv 
 ```toml
 [project]
 dependencies = [
-    "beet>=0.119.0",
+    "beet>=0.121.2",
     "beet-datapack-utils>=0.1.0",
 ]
 ```
