@@ -53,7 +53,7 @@ The loop runs once for the base pack and once per overlay. Inside the `with` blo
 
 ## API
 
-Everything is imported from `beet_datapack_utils`.
+Everything is imported from `beet_datapack_utils`. Only the names listed there are public API; the submodules may change in any release.
 
 ### Packs
 
