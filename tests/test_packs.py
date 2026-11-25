@@ -14,7 +14,7 @@ def disable_canyons(ctx: Context):
 
 
 def old_canyon_config(pack: VersionedPack) -> dict:
-    return pack.data_pack[WorldgenConfiguredCarver][CANYON].data["config"]
+    return pack.data[WorldgenConfiguredCarver][CANYON].data["config"]
 
 
 # -- versioned_packs(ctx), run inside a beet build ------------------------------
@@ -23,8 +23,8 @@ def old_canyon_config(pack: VersionedPack) -> dict:
 def test_versioned_packs(build):
     ctx = build()
     base, overlay = versioned_packs(ctx)
-    assert (base.data_pack, base.minecraft_version) == (ctx.data, "1.21.9")
-    assert (overlay.data_pack, overlay.minecraft_version) == (ctx.data.overlays["v26_3"], "26.3")
+    assert (base.data, base.version) == (ctx.data, "1.21.9")
+    assert (overlay.data, overlay.version) == (ctx.data.overlays["v26_3"], "26.3")
 
 
 def test_missing_base_version(build):
@@ -36,7 +36,7 @@ def test_missing_base_version(build):
 def test_empty_overlay_versions(build):
     # An `overlay_versions:` key without entries is read as None.
     ctx = build(meta={"base_version": "1.21.9", "overlay_versions": None})
-    assert [pack.minecraft_version for pack in versioned_packs(ctx)] == ["1.21.9"]
+    assert [pack.version for pack in versioned_packs(ctx)] == ["1.21.9"]
 
 
 def test_unconfigured_overlay(build):
@@ -122,7 +122,7 @@ def test_failed_edit_writes_nothing(load_vanilla):
     with pytest.raises(RuntimeError), pack.edit(CARVER, CANYON) as canyon:
         get_config(canyon)["probability"] = 0
         raise RuntimeError
-    assert CANYON not in pack.data_pack[WorldgenConfiguredCarver]
+    assert CANYON not in pack.data[WorldgenConfiguredCarver]
 
 
 def test_edit_missing_file(load_vanilla):

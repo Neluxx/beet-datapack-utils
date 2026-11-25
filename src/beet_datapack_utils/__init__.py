@@ -4,7 +4,7 @@
 Minecraft version. `VersionedPack.edit` edits a file of that version.
 """
 
-from .fields import first_existing_key, get_config, set_range
+from .fields import find_key, get_config, set_uniform
 from .file_types import CARVER, FEATURE
 from .packs import VersionedPack, versioned_packs
 
@@ -12,8 +12,8 @@ __all__ = [
     "CARVER",
     "FEATURE",
     "VersionedPack",
-    "first_existing_key",
+    "find_key",
     "get_config",
-    "set_range",
+    "set_uniform",
     "versioned_packs",
 ]

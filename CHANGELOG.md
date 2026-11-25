@@ -10,6 +10,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 ### Changed
+- **Breaking:** Renamed parts of the public API:
+
+  | Old | New |
+  | --- | --- |
+  | `first_existing_key(data, *keys)` | `find_key(data, *keys)` |
+  | `set_range(config, name, minimum, maximum)` | `set_uniform(config, name, minimum, maximum)` |
+  | `VersionedPack.data_pack` | `VersionedPack.data` |
+  | `VersionedPack.minecraft_version` | `VersionedPack.version` |
 
 ### Deprecated
 

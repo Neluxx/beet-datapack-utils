@@ -2,7 +2,7 @@
 
 from typing import Any
 
-__all__ = ["first_existing_key", "get_config", "set_range"]
+__all__ = ["find_key", "get_config", "set_uniform"]
 
 
 def get_config(data: dict[str, Any]) -> dict[str, Any]:
@@ -19,10 +19,10 @@ def get_config(data: dict[str, Any]) -> dict[str, Any]:
     return data.get("config", data)
 
 
-def first_existing_key(data: dict[str, Any], *keys: str) -> str:
+def find_key(data: dict[str, Any], *keys: str) -> str:
     """Return the first of `keys` that exists in `data`, for renamed fields.
 
-    >>> first_existing_key({"firstOctave": -9}, "base_octave", "firstOctave")
+    >>> find_key({"firstOctave": -9}, "base_octave", "firstOctave")
     'firstOctave'
     """
     for key in keys:
@@ -31,14 +31,14 @@ def first_existing_key(data: dict[str, Any], *keys: str) -> str:
     raise KeyError(f"None of {list(keys)} found in {sorted(data)}")
 
 
-def set_range(config: dict[str, Any], name: str, minimum: float, maximum: float) -> None:
+def set_uniform(config: dict[str, Any], name: str, minimum: float, maximum: float) -> None:
     """Set the bounds of the uniform range `config[name]`.
 
     Works with int ranges (`max_inclusive`), float ranges (`max_exclusive`)
     and the `value` wrapper used before 1.20.5.
 
     >>> config = {"radius": {"type": "minecraft:uniform", "min_inclusive": 2, "max_inclusive": 3}}
-    >>> set_range(config, "radius", 2, 5)
+    >>> set_uniform(config, "radius", 2, 5)
     >>> config["radius"]
     {'type': 'minecraft:uniform', 'min_inclusive': 2, 'max_inclusive': 5}
     """

@@ -46,42 +46,42 @@ class VersionedPack:
 
     def __init__(
         self,
-        data_pack: DataPack,
-        minecraft_version: str,
+        data: DataPack,
+        version: str,
         load_vanilla: Callable[[str], DataPack],
     ) -> None:
-        self.data_pack = data_pack
-        self.minecraft_version = minecraft_version
+        self.data = data
+        self.version = version
         self._load_vanilla = load_vanilla
 
     @contextmanager
     def edit(self, file_type: type[JsonFile] | MovedFileType, name: str) -> Iterator[Any]:
-        """Edit the JSON of a file and write it into `data_pack`.
+        """Edit the JSON of a file and write it into `data`.
 
-        Starts from the file in `data_pack` if it is already there, otherwise
-        from the vanilla file of `minecraft_version`. Nothing is written if
+        Starts from the file in `data` if it is already there, otherwise
+        from the vanilla file of `version`. Nothing is written if
         the `with` block raises.
 
             with pack.edit(CARVER, "minecraft:canyon") as canyon:
                 get_config(canyon)["probability"] = 0
         """
         if isinstance(file_type, MovedFileType):
-            file_type = file_type.for_version(self.minecraft_version)
+            file_type = file_type.for_version(self.version)
 
-        file = self.data_pack[file_type].get(name)
+        file = self.data[file_type].get(name)
         if file is None:
             file = self._vanilla[file_type].get(name)
         if file is None:
-            raise KeyError(f"{name} ({file_type.__name__}) not found in {self.minecraft_version}")
+            raise KeyError(f"{name} ({file_type.__name__}) not found in {self.version}")
 
         file = file.copy()
         yield file.data
-        self.data_pack[file_type][name] = file
+        self.data[file_type][name] = file
 
     @cached_property
     def _vanilla(self) -> DataPack:
         # Loaded on first use, so packs that never read vanilla build offline.
-        return self._load_vanilla(self.minecraft_version)
+        return self._load_vanilla(self.version)
 
 
 def _check_version(version: Any) -> str:

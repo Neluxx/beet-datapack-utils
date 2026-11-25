@@ -15,7 +15,7 @@ This library does that work for you. You write one plugin that describes *what* 
 
 - **One plugin for all versions:** `versioned_packs(ctx)` returns the base pack and every overlay with its Minecraft version.
 - **Edit vanilla files:** `pack.edit(...)` loads a file in a `with` block and writes it back. Vanilla is only downloaded when needed.
-- **Version differences:** `CARVER`, `FEATURE`, `get_config`, `set_range` and `first_existing_key` hide moved folders and renamed or restructured fields.
+- **Version differences:** `CARVER`, `FEATURE`, `get_config`, `set_uniform` and `find_key` hide moved folders and renamed or restructured fields.
 
 ## Quick start
 
