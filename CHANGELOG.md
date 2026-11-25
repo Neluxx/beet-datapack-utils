@@ -10,6 +10,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 ### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+### Dependencies
+
+## [v0.3.0](https://github.com/Neluxx/beet-datapack-utils/releases/tag/v0.3.0) - 2026-11-25
+
+### Changed
 - **Breaking:** Renamed the public API so the names say what they do:
 
   | Old | New |
@@ -26,8 +40,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Breaking:** `versioned_packs(ctx)` raises `TypeError` if a version isn't a string, e.g. an unquoted `1.20`
 - **Breaking:** `versioned_packs(ctx)` raises `ValueError` if a version isn't a release, e.g. a snapshot or pre-release
 
-### Deprecated
-
 ### Removed
 - **Breaking:** `Moved` is no longer exported. Use `CARVER` and `FEATURE`
 - **Breaking:** `is_reference`, `replace_nodes` and `Target.inline_density_function` are removed
@@ -37,10 +49,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Load the exact vanilla release. beet looks up releases by prefix, so `"1.19"` loaded 1.19.4
 - A vanilla version that can't be loaded is no longer reported as a missing file
 - `versioned_packs(ctx)` accepts an empty `meta.overlay_versions`
-
-### Security
-
-### Dependencies
 
 ## [v0.2.0](https://github.com/Neluxx/beet-datapack-utils/releases/tag/v0.2.0) - 2026-11-21
 
