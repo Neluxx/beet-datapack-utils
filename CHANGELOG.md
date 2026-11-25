@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- `CARVER_TAG` and `FEATURE_TAG` for the tag folders that moved in 26.3
 
 ### Changed
 - **Breaking:** Renamed parts of the public API:

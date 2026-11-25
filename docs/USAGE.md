@@ -73,7 +73,9 @@ Vanilla is only downloaded when `edit` needs it.
 | Name | Before 26.3 | From 26.3 on |
 | --- | --- | --- |
 | `CARVER` | `worldgen/configured_carver` | `worldgen/carver` |
+| `CARVER_TAG` | `tags/worldgen/configured_carver` | `tags/worldgen/carver` |
 | `FEATURE` | `worldgen/configured_feature` | `worldgen/feature` |
+| `FEATURE_TAG` | `tags/worldgen/configured_feature` | `tags/worldgen/feature` |
 
 ### Fields
 

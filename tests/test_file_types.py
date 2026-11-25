@@ -1,12 +1,16 @@
 import pytest
 from beet.contrib.worldgen import (
+    ConfiguredFeatureTag,
     WorldgenCarver,
+    WorldgenCarverTag,
     WorldgenConfiguredCarver,
+    WorldgenConfiguredCarverTag,
     WorldgenConfiguredFeature,
     WorldgenFeature,
+    WorldgenFeatureTag,
 )
 
-from beet_datapack_utils import CARVER, FEATURE
+from beet_datapack_utils import CARVER, CARVER_TAG, FEATURE, FEATURE_TAG
 from beet_datapack_utils.file_types import MovedFileType
 
 
@@ -23,6 +27,18 @@ from beet_datapack_utils.file_types import MovedFileType
 def test_builtin_file_types(version, carver, feature):
     assert CARVER.for_version(version) is carver
     assert FEATURE.for_version(version) is feature
+
+
+@pytest.mark.parametrize(
+    ("version", "carver_tag", "feature_tag"),
+    [
+        ("26.2", WorldgenConfiguredCarverTag, ConfiguredFeatureTag),
+        ("26.3", WorldgenCarverTag, WorldgenFeatureTag),
+    ],
+)
+def test_builtin_tag_file_types(version, carver_tag, feature_tag):
+    assert CARVER_TAG.for_version(version) is carver_tag
+    assert FEATURE_TAG.for_version(version) is feature_tag
 
 
 def test_since_is_inclusive():
