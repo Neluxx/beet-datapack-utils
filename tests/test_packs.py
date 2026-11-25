@@ -77,7 +77,7 @@ def test_loads_the_exact_vanilla_release(build, fake_vanilla):
 
 
 def test_unknown_vanilla_release(build):
-    with pytest.raises(KeyError, match="Minecraft 26 not found"):
+    with pytest.raises(ValueError, match="Minecraft 26 not found"):
         build(disable_canyons, meta={"base_version": "26"})
 
 

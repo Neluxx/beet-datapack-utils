@@ -99,7 +99,7 @@ def _load_vanilla(ctx: Context, version: str) -> DataPack:
     # registry that only contains the exact release.
     entry = next((v for v in releases.manifest.data["versions"] if v["id"] == version), None)
     if entry is None:
-        raise KeyError(f"Minecraft {version} not found in the version manifest")
+        raise ValueError(f"Minecraft {version} not found in the version manifest")
     manifest = JsonFile({"versions": [entry]})
     exact = ReleaseRegistry(runtimes=releases.runtimes, cache=releases.cache, manifest=manifest)
     return exact[version].mount("data").data

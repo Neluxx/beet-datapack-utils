@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   | `set_range(config, name, minimum, maximum)` | `set_uniform(config, name, minimum, maximum)` |
   | `VersionedPack.data_pack` | `VersionedPack.data` |
   | `VersionedPack.minecraft_version` | `VersionedPack.version` |
+- **Breaking:** `versioned_packs(ctx)` raises `ValueError` instead of `KeyError` if a version isn't a known release
 
 ### Deprecated
 
