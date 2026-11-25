@@ -26,7 +26,7 @@ You can also add the package to your `pyproject.toml` yourself and then run `uv 
 [project]
 dependencies = [
     "beet>=0.121.2",
-    "beet-datapack-utils>=0.3.0",
+    "beet-datapack-utils>=1.0.0",
 ]
 ```
 
@@ -46,4 +46,4 @@ The first build that reads vanilla files downloads the Minecraft versions it nee
 uv lock --upgrade-package beet-datapack-utils
 ```
 
-Check the [changelog](../CHANGELOG.md) before updating. A new major version (before 1.0.0: a new minor version) may rename or remove public functions.
+Check the [changelog](../CHANGELOG.md) before updating. A new major version may rename or remove public functions.

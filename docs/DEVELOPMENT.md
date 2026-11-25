@@ -59,7 +59,7 @@ When you add a public helper, export it in `__init__.py` (including `__all__`) a
 
 - **Commits** follow [Conventional Commits](https://www.conventionalcommits.org/): `<type>: <short description>`. Common types are `feat`, `fix`, `docs`, `refactor`, `chore`, `build` and `style`.
 - **Changelog:** add every user-facing change to the `Unreleased` section of [CHANGELOG.md](../CHANGELOG.md).
-- **Versioning** follows [Semantic Versioning](https://semver.org/). Renaming or removing a public function requires a major version bump. Before 1.0.0, breaking changes bump the minor version.
+- **Versioning** follows [Semantic Versioning](https://semver.org/). Renaming or removing a public function requires a major version bump.
 
 ## Releasing
 

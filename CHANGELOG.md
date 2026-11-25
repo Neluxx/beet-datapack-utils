@@ -8,6 +8,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+
+### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+### Dependencies
+
+## [v1.0.0](https://github.com/Neluxx/beet-datapack-utils/releases/tag/v1.0.0) - 2026-11-25
+
+### Added
 - `CARVER_TAG` and `FEATURE_TAG` for the tag folders that moved in 26.3
 
 ### Changed
@@ -20,16 +36,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   | `VersionedPack.data_pack` | `VersionedPack.data` |
   | `VersionedPack.minecraft_version` | `VersionedPack.version` |
 - **Breaking:** `versioned_packs(ctx)` raises `ValueError` instead of `KeyError` if a version isn't a known release
-
-### Deprecated
-
-### Removed
-
-### Fixed
-
-### Security
-
-### Dependencies
 
 ## [v0.3.0](https://github.com/Neluxx/beet-datapack-utils/releases/tag/v0.3.0) - 2026-11-25
 

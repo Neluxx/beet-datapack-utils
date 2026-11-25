@@ -4,7 +4,7 @@ build-backend = "uv_build"
 
 [project]
 name = "beet-datapack-utils"
-version = "0.3.0"
+version = "1.0.0"
 description = "A Python library that provides helper functions for Minecraft datapacks using beet."
 readme = "README.md"
 license = "MIT"
@@ -19,7 +19,7 @@ keywords = [
     "utility",
 ]
 classifiers = [
-    "Development Status :: 4 - Beta",
+    "Development Status :: 5 - Production/Stable",
     "Intended Audience :: Developers",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
